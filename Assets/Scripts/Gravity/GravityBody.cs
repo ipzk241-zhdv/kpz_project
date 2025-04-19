@@ -1,8 +1,10 @@
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class GravityBody : MonoBehaviour
 {
-    public GravityPlanet currentGravitySource;
+    // Список всех планет/солнечных систем, в чьём триггере мы сейчас находимся
+    private readonly List<GravityPlanet> gravitySources = new List<GravityPlanet>();
 
     private Rigidbody rb;
     private GravityConfig config;
@@ -12,37 +14,69 @@ public class GravityBody : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         rb.useGravity = false;
 
-        config = GravityConfig.Instance ?? Resources.Load<GravityConfig>("Scripts/Configs/GravityConfig");
+        config = GravityConfig.Instance
+                 ?? Resources.Load<GravityConfig>("Scripts/Configs/GravityConfig");
 
         if (config == null)
             Debug.LogError("GravityConfig is missing.");
-
-        config = GravityConfig.Instance;
     }
 
+    // Когда входим в зону триггера планеты/солнца — добавляем её в список
     private void OnTriggerEnter(Collider other)
     {
-        GravityPlanet gravityPlanet = other.GetComponent<GravityPlanet>();
-        if (gravityPlanet != null)
-        {
-            currentGravitySource = gravityPlanet;
-        }
+        var gp = other.GetComponent<GravityPlanet>();
+        if (gp != null && !gravitySources.Contains(gp))
+            gravitySources.Add(gp);
+    }
+
+    // Когда выходим из зоны — убираем
+    private void OnTriggerExit(Collider other)
+    {
+        var gp = other.GetComponent<GravityPlanet>();
+        if (gp != null)
+            gravitySources.Remove(gp);
     }
 
     void FixedUpdate()
     {
-        if (currentGravitySource == null || config == null) return;
+        if (config == null || gravitySources.Count == 0)
+            return;
 
-        Vector3 direction = currentGravitySource.GetGravityDirection(transform.position);
-        float distance = Vector3.Distance(transform.position, currentGravitySource.transform.position);
-        float m1 = rb.mass;
-        float m2 = currentGravitySource.GetComponent<Rigidbody>().mass;
+        double bestForce = 0;
+        GravityPlanet bestSource = null;
 
-        float forceMagnitude = config.gravitationalConstant * (m1 * m2) / (distance * distance);
-        Vector3 force = direction * forceMagnitude;
+        // масса этого тела
+        double m1 = rb.mass;
+        double G = config.gravitationalConstant; // km^3 / t / s^2
 
-        rb.AddForce(force);
-        Debug.DrawRay(transform.position, force.normalized * 100f, Color.red);
+        // Ищем источник с максимальной F = G·m1·m2 / r²
+        foreach (var gp in gravitySources)
+        {
+            double m2 = gp.GetMass();
+            float dist = Vector3.Distance(transform.position, gp.transform.position);
+
+            if (dist <= 0f) continue;
+
+            double force = G * (m1 * m2) / (dist * dist);
+            if (force > bestForce)
+            {
+                bestForce = force;
+                bestSource = gp;
+                TrajectoryPredictor tr = GetComponent<TrajectoryPredictor>();
+                if (tr != null)
+                {
+                    tr.gravitySource = bestSource;
+                }
+            }
+        }
+
+        if (bestSource != null)
+        {
+            // Применяем гравитацию от лучшего источника
+            Vector3 dir = bestSource.GetGravityDirection(transform.position);
+            rb.AddForce(dir * (float)bestForce);
+
+            Debug.DrawRay(transform.position, dir * Mathf.Log10((float)bestForce), Color.red);
+        }
     }
 }
-

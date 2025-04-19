@@ -23,7 +23,6 @@ public class TimeWarpController : MonoBehaviour
         currentIndex = Mathf.Clamp(currentIndex + direction, 0, warpSpeeds.Length - 1);
         Time.timeScale = warpSpeeds[currentIndex];
         Time.fixedDeltaTime = 0.02f * Time.timeScale; // Щоб фізика відповідала швидкості часу
-
         Debug.Log($"Time Warp: x{warpSpeeds[currentIndex]}");
     }
 }
