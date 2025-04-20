@@ -3,8 +3,8 @@ using UnityEngine;
 public class TimeWarpController : MonoBehaviour
 {
     [Header("Time Warp Settings")]
-    public float[] warpSpeeds = { 0.25f, 0.5f, 1f, 2f, 5f, 10f, 50f };
-    private int currentIndex = 2; // Індекс для 1x (нормальна швидкість)
+    public float[] warpSpeeds = { 0.03125f, 0.625f, 0.125f, 0.25f, 0.5f, 1f, 2f, 5f, 10f, 50f };
+    private int currentIndex = 5; // Індекс для 1x (нормальна швидкість)
 
     void Update()
     {
