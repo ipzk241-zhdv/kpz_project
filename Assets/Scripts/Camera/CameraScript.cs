@@ -13,7 +13,7 @@ public class CameraScript : MonoBehaviour
             transform.position = new Vector3(
                 targetPosition.x,
                 targetPosition.y,
-                transform.position.z // залишаємо поточну Z позицію
+                targetPosition.z + 0.6f// залишаємо поточну Z позицію
             );
         }
     }

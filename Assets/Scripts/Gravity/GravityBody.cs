@@ -49,7 +49,6 @@ public class GravityBody : MonoBehaviour
         double m1 = rb.mass;
         double G = config.gravitationalConstant; // km^3 / t / s^2
 
-        // Ищем источник с максимальной F = G·m1·m2 / r²
         foreach (var gp in gravitySources)
         {
             double m2 = gp.GetMass();
@@ -62,6 +61,8 @@ public class GravityBody : MonoBehaviour
             {
                 bestForce = force;
                 bestSource = gp;
+
+                // Обновляем источник в TrajectoryPredictor
                 TrajectoryPredictor tr = GetComponent<TrajectoryPredictor>();
                 if (tr != null)
                 {
@@ -70,13 +71,17 @@ public class GravityBody : MonoBehaviour
             }
         }
 
+        Vector3 relativeVelocity = bestSource.transform.InverseTransformDirection(rb.velocity);
+        Debug.Log($"Относительная скорость ракеты относительно {bestSource.name}: {relativeVelocity} (магнитуда: {relativeVelocity.magnitude:F2} км/с)");
+
         if (bestSource != null)
         {
-            // Применяем гравитацию от лучшего источника
+            // Применяем силу гравитации
             Vector3 dir = bestSource.GetGravityDirection(transform.position);
             rb.AddForce(dir * (float)bestForce);
-
-            Debug.DrawRay(transform.position, dir * Mathf.Log10((float)bestForce), Color.red);
+            //Debug.Log($"Force: {dir * (float)bestForce}");
+            Debug.DrawRay(transform.position, -dir * Mathf.Log10((float)bestForce), Color.red); // to planet
+            Debug.DrawRay(bestSource.transform.position, (transform.position - bestSource.transform.position).normalized * 2f, Color.green); // from planet
         }
     }
 }

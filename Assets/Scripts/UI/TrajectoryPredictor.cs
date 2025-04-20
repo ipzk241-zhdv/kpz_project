@@ -1,20 +1,14 @@
-using UnityEngine;
+п»їusing UnityEngine;
 
 [RequireComponent(typeof(LineRenderer), typeof(Rigidbody))]
 public class TrajectoryPredictor : MonoBehaviour
 {
-    [Header("Налаштування візуалізації")]
-    [Tooltip("Скільки точок малювати")]
-    public int steps = 300;
-    [Tooltip("Час між точками (в секундах)")]
-    public float timeStep = 0.1f;
-    [Tooltip("Ширина лінії")]
+    [Header("Р’РёР·СѓР°Р»РёР·Р°С†РёСЏ")]
+    public int resolution = 100;
     public float lineWidth = 0.1f;
-    [Tooltip("Колір траєкторії")]
     public Color lineColor = Color.green;
 
-    [Header("Гравітаційне джерело")]
-    [Tooltip("Гравітаційне тіло (планета/сонце)")]
+    [Header("Р“СЂР°РІРёС‚Р°С†РёРѕРЅРЅРѕРµ С‚РµР»Рѕ")]
     public GravityPlanet gravitySource;
 
     private LineRenderer lineRenderer;
@@ -26,15 +20,13 @@ public class TrajectoryPredictor : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         lineRenderer = GetComponent<LineRenderer>();
 
-        // Лінія
-        lineRenderer.positionCount = steps;
+        lineRenderer.positionCount = resolution;
         lineRenderer.startWidth = lineWidth;
         lineRenderer.endWidth = lineWidth;
         lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
         lineRenderer.startColor = lineColor;
         lineRenderer.endColor = lineColor;
 
-        // Конфіг
         config = GravityConfig.Instance
                ?? Resources.Load<GravityConfig>("Scripts/Configs/GravityConfig");
         if (config == null)
@@ -46,42 +38,51 @@ public class TrajectoryPredictor : MonoBehaviour
         if (gravitySource == null || config == null)
             return;
 
-        SimulateTrajectory();
+        DrawOrbit();
     }
 
-    void SimulateTrajectory()
+    void DrawOrbit()
     {
-        Vector3[] positions = new Vector3[steps];
+        Vector3 r = transform.localPosition;
+        Vector3 v = transform.parent.InverseTransformDirection(rb.velocity);
 
-        Vector3 position = transform.position;
-        Vector3 velocity = rb.velocity;
+        float mu = (float)(config.gravitationalConstant * gravitySource.GetMass());
 
-        // Масса источника (тонн)
-        double M = gravitySource.GetMass();
-        // G в km^3 / t / s^2
-        double G = config.gravitationalConstant;
+        float speed2 = v.sqrMagnitude;
+        float rMag = r.magnitude;
+        float energy = speed2 / 2f - mu / rMag;
+        float a = -mu / (2f * energy);
 
-        for (int i = 0; i < steps; i++)
+        if (a < 0 || float.IsInfinity(a)) return; // РќРµСЌР»Р»РёРїС‚РёС‡РµСЃРєР°СЏ РѕСЂР±РёС‚Р°
+
+        Vector3 h = Vector3.Cross(r, v);
+        Vector3 eVec = Vector3.Cross(v, h) / mu - r.normalized;
+        float e = eVec.magnitude;
+        if (e >= 1f) return; // РќРµСЌР»Р»РёРїС‚РёС‡РµСЃРєР°СЏ РѕСЂР±РёС‚Р°
+
+        Vector3 pericenterDir = eVec.normalized;
+        float b = a * Mathf.Sqrt(1 - e * e);
+
+        Vector3 focus = Vector3.zero;
+        Vector3 center = -pericenterDir * (a * e);
+
+        Vector3[] points = new Vector3[resolution];
+        for (int i = 0; i < resolution; i++)
         {
-            positions[i] = position;
+            float theta = (2 * Mathf.PI * i) / resolution;
+            float x = a * Mathf.Cos(theta);
+            float y = b * Mathf.Sin(theta);
 
-            // Напрямок і відстань до центру гравітації
-            Vector3 dir = gravitySource.GetGravityDirection(position);
-            float dist = Vector3.Distance(position, gravitySource.transform.position);
+            Vector3 point = new Vector3(x, y, 0);
+            point += center; // СЃРјРµС‰РµРЅРёРµ РѕС‚ С„РѕРєСѓСЃР° Рє С†РµРЅС‚СЂСѓ
 
-            if (dist > 0f)
-            {
-                // Прискорення: a = G*M / r^2
-                double accel = G * M / (dist * dist);
-                Vector3 gravityAccel = dir * (float)accel;
+            Quaternion rot = Quaternion.FromToRotation(Vector3.right, pericenterDir);
+            point = rot * point;
 
-                // Інтегруємо
-                velocity += gravityAccel * timeStep;
-            }
-
-            position += velocity * timeStep;
+            points[i] = transform.parent.TransformPoint(point);
         }
 
-        lineRenderer.SetPositions(positions);
+        lineRenderer.positionCount = resolution;
+        lineRenderer.SetPositions(points);
     }
 }

@@ -160,6 +160,22 @@ public class CelestialBodyController : MonoBehaviour
         }
     }
 
+    public Vector3 GetOrbitalVelocity()
+    {
+        if (angularSpeed <= 0) return Vector3.zero;
+
+        // Угловая скорость в радианах
+        float anglePerSecond = (float)angularSpeed;
+
+        // Направление тангенциальной скорости = Vector3.Cross(Vector3.up, направление на центр)
+        Vector3 radialDir = (transform.position - centralBody.position).normalized;
+        Vector3 tangentialDir = Vector3.Cross(Vector3.up, radialDir).normalized;
+
+        // v = ωr
+        float speed = anglePerSecond * orbitalRadius;
+        return tangentialDir * speed;
+    }
+
     public void UpdateOrbitVisualization()
     {
         if (visualizeOrbit && lr != null)
