@@ -13,6 +13,7 @@ public class OrbitalMotion : MonoBehaviour
     void Start()
     {
         rotationAngle = 0f;
+        self = GetComponent<CelestialBody>();
 
         // ==== Ініціалізація orbitTimer ====
         if (centralBody != null)
@@ -49,13 +50,13 @@ public class OrbitalMotion : MonoBehaviour
         transform.position = GetWorldPositionAtTime(orbitTimer);
 
         // обертання навколо своєї осі / tidal lock
-        if (!tidalLock)
+        if (!tidalLock && self.rotationPeriod > 0f)
         {
             float rotSpeed = 360f / self.rotationPeriod;
             rotationAngle += rotSpeed * Time.fixedDeltaTime;
             transform.rotation = Quaternion.Euler(0f, rotationAngle, 0f);
         }
-        else
+        else if (tidalLock)
         {
             Vector3 dir = centralBody.transform.position - transform.position;
             transform.rotation = Quaternion.LookRotation(dir, Vector3.up);
