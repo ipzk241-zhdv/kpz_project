@@ -6,6 +6,7 @@ public struct Vector3d
     public double x;
     public double y;
     public double z;
+    public const double Deg2Rad = 0.017453292519943d;
     private const double EPSILON = 1.401298E-45;
 
     public Vector3d normalized
@@ -278,5 +279,28 @@ public struct Vector3d
         return this * cosTheta +
                Vector3d.Cross(axis, this) * sinTheta +
                axis * Vector3d.Dot(axis, this) * (1 - cosTheta);
+    }
+
+    public static Vector3d RotateVectorByAngle(Vector3d v, double angleRad, Vector3d n)
+    {
+        double cosT = Math.Cos(angleRad);
+        double sinT = Math.Sin(angleRad);
+        double oneMinusCos = 1f - cosT;
+        // Rotation matrix:
+        double a11 = oneMinusCos * n.x * n.x + cosT;
+        double a12 = oneMinusCos * n.x * n.y - n.z * sinT;
+        double a13 = oneMinusCos * n.x * n.z + n.y * sinT;
+        double a21 = oneMinusCos * n.x * n.y + n.z * sinT;
+        double a22 = oneMinusCos * n.y * n.y + cosT;
+        double a23 = oneMinusCos * n.y * n.z - n.x * sinT;
+        double a31 = oneMinusCos * n.x * n.z - n.y * sinT;
+        double a32 = oneMinusCos * n.y * n.z + n.x * sinT;
+        double a33 = oneMinusCos * n.z * n.z + cosT;
+        
+        return new Vector3d(
+            v.x * a11 + v.y * a12 + v.z * a13,
+            v.x * a21 + v.y * a22 + v.z * a23,
+            v.x * a31 + v.y * a32 + v.z * a33
+        );
     }
 }

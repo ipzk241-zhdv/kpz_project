@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 [Serializable]
 public class OrbitData
@@ -25,6 +26,156 @@ public class OrbitData
 
     public Vector3d positionRelativeToAttractor;
     public Vector3d velocityRelativeToAttractor;
+
+    public double AttractorMass;
+    public double AttractorDistance;
+
+    public static readonly Vector3d EclipticRight = new Vector3d(1, 0, 0);
+    public static readonly Vector3d EclipticUp = new Vector3d(0, 1, 0);
+    public static readonly Vector3d EclipticNormal = new Vector3d(0, 0, 1);
+
+    #region Initialization
+
+    /// <summary>
+    /// Ініціалізація вручну
+    /// </summary>
+    public OrbitData() { }
+
+    /// <summary>
+    /// Ініціалізація за векторами стану: position, velocity, attractorMass, gConst
+    /// </summary>
+    public OrbitData(Vector3d position, Vector3d velocity, double attractorMass, double gConst)
+    {
+        // зберігаємо вектори стану
+        this.positionRelativeToAttractor = position;
+        this.velocityRelativeToAttractor = velocity;
+        // ? = G * M
+        this.MG = attractorMass * gConst;
+        // заповнення всіх решти полів
+        CalculateOrbitStateFromOrbitalVectors();
+    }
+
+    /// <summary>
+    /// Ініціалізація на основі класичних орбітальних елементів:
+    /// ексцентриситету e, великої піввісі a, середньої аномалії M?, нахилу i?,
+    /// аргументу перицентра ??, довготи висхідного вузла ??, маси атрактора та G.
+    /// </summary>
+    public OrbitData(double eccentricity,
+                     double semiMajorAxis,
+                     double meanAnomalyDeg,
+                     double inclinationDeg,
+                     double argOfPerifocusDeg,
+                     double ascendingNodeDeg,
+                     double attractorMass,
+                     double gConst)
+    {
+        // Зберігаємо форму еліпсу/гіперболи
+        this.Eccentricity = eccentricity;
+        this.SemiMajorAxis = semiMajorAxis;
+
+        // Обчислення малої піввісі для еліптичної (e<1) або гіперболічної (e>1) траєкторії
+        if (eccentricity < 1.0)
+            this.SemiMinorAxis = SemiMajorAxis * Math.Sqrt(1 - eccentricity * eccentricity);
+        else if (eccentricity > 1.0)
+            this.SemiMinorAxis = SemiMajorAxis * Math.Sqrt(eccentricity * eccentricity - 1);
+        else
+            this.SemiMinorAxis = 0;  // параболічний випадок
+
+        // Нормалізовані вектори екліптичної площини та права сторона екліптики
+        var normal = EclipticNormal.normalized;
+        var ascendingNode = EclipticRight.normalized;
+
+        // Приводимо кути до діапазону [-180°,180°]
+        ascendingNodeDeg %= 360;
+        if (ascendingNodeDeg > 180) ascendingNodeDeg -= 360;
+        inclinationDeg %= 360;
+        if (inclinationDeg > 180) inclinationDeg -= 360;
+        argOfPerifocusDeg %= 360;
+        if (argOfPerifocusDeg > 180) argOfPerifocusDeg -= 360;
+
+        // Розгортаємо вектор вузлів навколо нормалі на кут ?
+        ascendingNode = Vector3d.RotateVectorByAngle(
+                           ascendingNode,
+                           ascendingNodeDeg * Vector3d.Deg2Rad,
+                           normal
+                       ).normalized;
+
+        // Далі обертаємо нормаль навколо нового вузлового вектора на кут i
+        normal = Vector3d.RotateVectorByAngle(
+                     normal,
+                     inclinationDeg * Vector3d.Deg2Rad,
+                     ascendingNode
+                 ).normalized;
+
+        // Вектор періапсису: початково по вузловій лінії, потім обертаємо на ?
+        Periapsis = Vector3d.RotateVectorByAngle(
+                        ascendingNode,
+                        argOfPerifocusDeg * Vector3d.Deg2Rad,
+                        normal
+                    ).normalized;
+
+        // Базиси великої та малої піввісей у тривимірному просторі
+        this.SemiMajorAxisBasis = Periapsis;
+        this.SemiMinorAxisBasis = Vector3d.Cross(Periapsis, normal).normalized;
+
+        // Перетворюємо задані в градусах аномалії в радіани
+        this.MeanAnomaly = meanAnomalyDeg * Vector3d.Deg2Rad;
+        this.EccentricAnomaly = Utils.ConvertMeanToEccentricAnomaly(
+                                    this.MeanAnomaly,
+                                    this.Eccentricity
+                                );
+        this.TrueAnomaly = Utils.ConvertEccentricToTrueAnomaly(
+                                    this.EccentricAnomaly,
+                                    this.Eccentricity
+                                );
+
+        // Параметри гравітації
+        this.AttractorMass = attractorMass;
+        this.MG = gConst;
+
+        // Запуск обчислення всіх полів на основі цих елементів
+        CalculateOrbitStateFromOrbitalVectors();
+    }
+
+    /// <summary>
+    /// Обчислює всі поля OrbitData на основі 
+    /// positionRelativeToAttractor, velocityRelativeToAttractor і MG.
+    /// </summary>
+    public void CalculateOrbitStateFromOrbitalVectors()
+    {
+        // форма орбіти
+        SemiMajorAxis = ComputeSemiMajorAxis();
+        Eccentricity = ComputeEccentricity();
+        SemiMinorAxis = ComputeSemiMinorAxis();
+        FocalParameter = ComputeFocalParameter();
+        OrbitCompressionRatio = SemiMinorAxis / SemiMajorAxis;
+
+        // рухові характеристики
+        Period = ComputePeriod();
+        MeanMotion = ComputeMeanMotion();
+
+        // аномалії
+        TrueAnomaly = ComputeTrueAnomaly();
+        EccentricAnomaly = ComputeEccentricAnomaly();
+        MeanAnomaly = ComputeMeanAnomaly();
+
+        // геометрія в просторі
+        OrbitNormal = GetOrbitalPlaneNormal();
+        SemiMajorAxisBasis = GetSemiMajorBasis();
+        SemiMinorAxisBasis = GetSemiMinorBasis();
+
+        // точки на орбіті
+        PeriapsisDistance = ComputePeriapsisDistance();
+        ApoapsisDistance = ComputeApoapsisDistance();
+        CenterPoint = ComputeEllipseCenter();
+        Periapsis = GetPeriapsisPoint();
+        Apoapsis = GetApoapsisPoint();
+
+        // мас-центр
+        // MG уже задано
+    }
+
+    #endregion
 
     #region VectorCalculations
 
@@ -335,24 +486,6 @@ public class OrbitData
     }
 
     /// <summary>
-    /// Розв'язання рівняння Кеплера: M = E - e * sin(E)
-    /// методом Ньютона, щоб знайти ексцентричну аномалію
-    /// </summary>
-    public double SolveKeplersEquation(double M, double e, int maxIterations = 20, double tolerance = 1e-8)
-    {
-        double E = M;
-        for (int i = 0; i < maxIterations; i++)
-        {
-            double f = E - e * Math.Sin(E) - M;
-            double fPrime = 1 - e * Math.Cos(E);
-            double delta = f / fPrime;
-            E -= delta;
-            if (Math.Abs(delta) < tolerance) break;
-        }
-        return E;
-    }
-
-    /// <summary>
     /// Розрахунок істинної аномалії з ексцентричної
     /// </summary>
     public double ComputeTrueAnomalyFromEccentric(double E, double e)
@@ -370,7 +503,7 @@ public class OrbitData
         double a = ComputeSemiMajorAxis();
         double e = ComputeEccentricity();
         double M = ComputeMeanAnomalyAtTime(MeanAnomaly, ComputeMeanMotion(), timeSinceEpoch);
-        double E = SolveKeplersEquation(M, e);
+        double E = Utils.SolveKeplersEquation(M, e);
         double nu = ComputeTrueAnomalyFromEccentric(E, e);
 
         double r = a * (1 - e * e) / (1 + e * Math.Cos(nu));
@@ -391,6 +524,4 @@ public class OrbitData
     }
 
     #endregion
-
-
 }
