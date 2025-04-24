@@ -268,4 +268,15 @@ public struct Vector3d
     {
         return new Vector3d(Math.Max(a.x, b.x), Math.Max(a.y, b.y), Math.Max(a.z, b.z));
     }
+
+    public Vector3d RotateAround(Vector3d axis, double angle)
+    {
+        axis = axis.normalized;
+        double cosTheta = Math.Cos(angle);
+        double sinTheta = Math.Sin(angle);
+
+        return this * cosTheta +
+               Vector3d.Cross(axis, this) * sinTheta +
+               axis * Vector3d.Dot(axis, this) * (1 - cosTheta);
+    }
 }

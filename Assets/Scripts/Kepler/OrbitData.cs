@@ -257,4 +257,140 @@ public class OrbitData
     }
 
     #endregion
+
+    #region OrbitalPoints
+
+    /// <summary>
+    /// Поточна позиція об'єкта на орбіті (вже задана)
+    /// </summary>
+    public Vector3d GetCurrentPosition()
+    {
+        return positionRelativeToAttractor;
+    }
+
+    /// <summary>
+    /// Поточна швидкість об'єкта на орбіті (вже задана)
+    /// </summary>
+    public Vector3d GetCurrentVelocity()
+    {
+        return velocityRelativeToAttractor;
+    }
+
+    /// <summary>
+    /// Позиція періапсису у світових координатах
+    /// </summary>
+    public Vector3d GetPeriapsisPoint()
+    {
+        return CenterPoint + GetPeriapsisDirection() * ComputePeriapsisDistance();
+    }
+
+    /// <summary>
+    /// Позиція апоапсису у світових координатах
+    /// </summary>
+    public Vector3d GetApoapsisPoint()
+    {
+        return CenterPoint + GetApoapsisDirection() * ComputeApoapsisDistance();
+    }
+
+    /// <summary>
+    /// Відстань до періапсису: r_p = a * (1 - e)
+    /// </summary>
+    public double ComputePeriapsisDistance()
+    {
+        double a = ComputeSemiMajorAxis();
+        double e = ComputeEccentricity();
+        return a * (1 - e);
+    }
+
+    /// <summary>
+    /// Відстань до апоапсису: r_a = a * (1 + e)
+    /// </summary>
+    public double ComputeApoapsisDistance()
+    {
+        double a = ComputeSemiMajorAxis();
+        double e = ComputeEccentricity();
+        return a * (1 + e);
+    }
+
+    /// <summary>
+    /// Центр орбіти (середина великої осі, між апо- і періапсисом)
+    /// </summary>
+    public Vector3d ComputeEllipseCenter()
+    {
+        return (GetPeriapsisPoint() + GetApoapsisPoint()) * 0.5;
+    }
+
+    #endregion
+
+    #region TemporalCalculations
+
+    /// <summary>
+    /// Розрахунок середньої аномалії в заданий час
+    /// M(t) = M0 + n * (t - t0)
+    /// </summary>
+    public double ComputeMeanAnomalyAtTime(double meanAnomalyAtEpoch, double meanMotion, double timeSinceEpoch)
+    {
+        double M = meanAnomalyAtEpoch + meanMotion * timeSinceEpoch;
+        return NormalizeAngle(M);
+    }
+
+    /// <summary>
+    /// Розв'язання рівняння Кеплера: M = E - e * sin(E)
+    /// методом Ньютона, щоб знайти ексцентричну аномалію
+    /// </summary>
+    public double SolveKeplersEquation(double M, double e, int maxIterations = 20, double tolerance = 1e-8)
+    {
+        double E = M;
+        for (int i = 0; i < maxIterations; i++)
+        {
+            double f = E - e * Math.Sin(E) - M;
+            double fPrime = 1 - e * Math.Cos(E);
+            double delta = f / fPrime;
+            E -= delta;
+            if (Math.Abs(delta) < tolerance) break;
+        }
+        return E;
+    }
+
+    /// <summary>
+    /// Розрахунок істинної аномалії з ексцентричної
+    /// </summary>
+    public double ComputeTrueAnomalyFromEccentric(double E, double e)
+    {
+        double cosNu = (Math.Cos(E) - e) / (1 - e * Math.Cos(E));
+        double sinNu = (Math.Sqrt(1 - e * e) * Math.Sin(E)) / (1 - e * Math.Cos(E));
+        return Math.Atan2(sinNu, cosNu);
+    }
+
+    /// <summary>
+    /// Позиція на орбіті в момент часу t
+    /// </summary>
+    public Vector3d ComputePositionAtTime(double timeSinceEpoch)
+    {
+        double a = ComputeSemiMajorAxis();
+        double e = ComputeEccentricity();
+        double M = ComputeMeanAnomalyAtTime(MeanAnomaly, ComputeMeanMotion(), timeSinceEpoch);
+        double E = SolveKeplersEquation(M, e);
+        double nu = ComputeTrueAnomalyFromEccentric(E, e);
+
+        double r = a * (1 - e * e) / (1 + e * Math.Cos(nu));
+
+        Vector3d direction = GetPeriapsisDirection().RotateAround(OrbitNormal, nu);
+        return CenterPoint + direction * r;
+    }
+
+    /// <summary>
+    /// Нормалізація кута в межах [0, 2?]
+    /// </summary>
+    private double NormalizeAngle(double angle)
+    {
+        double twoPi = 2 * Math.PI;
+        angle = angle % twoPi;
+        if (angle < 0) angle += twoPi;
+        return angle;
+    }
+
+    #endregion
+
+
 }
