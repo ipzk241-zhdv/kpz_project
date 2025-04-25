@@ -27,7 +27,7 @@ public class CameraController : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
     }
 
-    void LateUpdate()
+    void FixedUpdate()
     {
         HandleZoom();
         HandleRotation();

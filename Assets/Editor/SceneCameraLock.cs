@@ -15,7 +15,7 @@ public static class SceneCameraLock
         SceneView.duringSceneGui += OnSceneGUI;
     }
 
-    [MenuItem("Tools/Scene Camera Lock/Toggle Lock %#l")] // Ctrl/Cmd + Shift + L
+    [MenuItem("Tools/Scene Camera Lock/Toggle Lock %`")] // Ctrl/Cmd + Shift + L
     private static void ToggleLock()
     {
         if (Selection.activeTransform != null)
