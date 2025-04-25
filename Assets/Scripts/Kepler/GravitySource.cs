@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [System.Serializable]
-public class AttractorData
+public class GravitySource
 {
     public Transform AttractorObject;
     public float AttractorMass = 1000f;

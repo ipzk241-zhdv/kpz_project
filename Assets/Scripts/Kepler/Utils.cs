@@ -8,23 +8,66 @@ public class Utils
     public const double Rad2Deg = 57.295779513082d;
 
     /// <summary>
-    /// Розв'язання рівняння Кеплера: M = E - e * sin(E)
-    /// методом Ньютона, щоб знайти ексцентричну аномалію
+    /// Обчислення оберненого гіперболічного косинуса.
     /// </summary>
-    public static double SolveKeplersEquation(double M, double e, int maxIterations = 20, double tolerance = 1e-8)
+    public static double Acosh(double x)
     {
-        double E = M;
-        for (int i = 0; i < maxIterations; i++)
+        if (x < 1.0)
         {
-            double f = E - e * Math.Sin(E) - M;
-            double fPrime = 1 - e * Math.Cos(E);
-            double delta = f / fPrime;
-            E -= delta;
-            if (Math.Abs(delta) < tolerance) break;
+            return 0;
         }
-        return E;
+
+        return Math.Log(x + Math.Sqrt(x * x - 1.0));
     }
 
+    /// <summary>
+    /// Розв'язання рівняння Кеплера для гіперболічної орбіти.
+    /// </summary>
+    public static double KeplerSolverHyperbolicCase(double meanAnomaly, double eccentricity)
+    {
+        double delta = 1d;
+
+        double F = Math.Log(2d * Math.Abs(meanAnomaly) / eccentricity + 1.8d);
+        if (double.IsNaN(F) || double.IsInfinity(F))
+        {
+            return meanAnomaly;
+        }
+
+        while (delta > 1e-8 || delta < -1e-8)
+        {
+            delta = (eccentricity * Math.Sinh(F) - F - meanAnomaly) / (eccentricity * Math.Cosh(F) - 1d);
+            F -= delta;
+        }
+
+        return F;
+    }
+
+    /// <summary>
+    /// Розв'язання рівняння Кеплера для еліптичної орбіти.
+    /// </summary>
+    public static double SolveKeplersEquation(double meanAnomaly, double eccentricity)
+    {
+        int iterations = (int)(Math.Ceiling((eccentricity + 0.7d) * 1.25d)) << 1;
+        double m = meanAnomaly;
+        double esinE;
+        double ecosE;
+        double deltaE;
+        double n;
+        for (int i = 0; i < iterations; i++)
+        {
+            esinE = eccentricity * Math.Sin(m);
+            ecosE = eccentricity * Math.Cos(m);
+            deltaE = m - esinE - meanAnomaly;
+            n = 1.0 - ecosE;
+            m += -5d * deltaE / (n + Math.Sign(n) * Math.Sqrt(Math.Abs(16d * n * n - 20d * deltaE * esinE)));
+        }
+
+        return m;
+    }
+
+    /// <summary>
+    /// Конвертація середньої аномалії в ексцентричну.
+    /// </summary>
     public static double ConvertMeanToEccentricAnomaly(double meanAnomaly, double eccentricity)
     {
         if (eccentricity < 1.0)
@@ -33,9 +76,7 @@ public class Utils
         }
         else if (eccentricity > 1.0)
         {
-            return 0;
-            // TODO
-            //return KeplerSolverHyperbolicCase(meanAnomaly, eccentricity);
+            return KeplerSolverHyperbolicCase(meanAnomaly, eccentricity);
         }
         else
         {
@@ -47,6 +88,9 @@ public class Utils
         }
     }
 
+    /// <summary>
+    /// Конвертація ексцентричної аномалії в середню.
+    /// </summary>
     public static double ConvertEccentricToMeanAnomaly(double eccentricAnomaly, double eccentricity)
     {
         if (eccentricity < 1.0)
@@ -64,6 +108,48 @@ public class Utils
         }
     }
 
+    /// <summary>
+    /// Конвертація істинної аномалії в ексцентричну.
+    /// </summary>
+    public static double ConvertTrueToEccentricAnomaly(double trueAnomaly, double eccentricity)
+    {
+        if (double.IsNaN(eccentricity) || double.IsInfinity(eccentricity))
+        {
+            return trueAnomaly;
+        }
+
+        trueAnomaly %= PI_2;
+        if (eccentricity < 1.0)
+        {
+            if (trueAnomaly < 0)
+            {
+                trueAnomaly += PI_2;
+            }
+
+            double cosT2 = Math.Cos(trueAnomaly);
+            double eccAnom = Math.Acos((eccentricity + cosT2) / (1d + eccentricity * cosT2));
+            if (trueAnomaly > Math.PI)
+            {
+                eccAnom = PI_2 - eccAnom;
+            }
+
+            return eccAnom;
+        }
+        else if (eccentricity > 1.0)
+        {
+            double cosT = Math.Cos(trueAnomaly);
+            double eccAnom = Acosh((eccentricity + cosT) / (1d + eccentricity * cosT)) * Math.Sign(trueAnomaly);
+            return eccAnom;
+        }
+        else
+        {
+            return trueAnomaly;
+        }
+    }
+
+    /// <summary>
+    /// Конвертація ексцентричної аномалії в істинну.
+    /// </summary>
     public static double ConvertEccentricToTrueAnomaly(double eccentricAnomaly, double eccentricity)
     {
         if (eccentricity < 1.0)

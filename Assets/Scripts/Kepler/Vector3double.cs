@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 [System.Serializable]
 public struct Vector3d
@@ -302,5 +303,10 @@ public struct Vector3d
             v.x * a21 + v.y * a22 + v.z * a23,
             v.x * a31 + v.y * a32 + v.z * a33
         );
+    }
+
+    public Vector3 ToVector3()
+    {
+        return new Vector3((float)x, (float)y, (float)z);
     }
 }
