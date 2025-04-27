@@ -176,4 +176,23 @@ public class Utils
             return eccentricAnomaly;
         }
     }
+
+    /// <summary>
+    /// Повертає істинну аномалію від поточної позиції до фокусу.
+    /// </summary>
+    public static double CalcTrueAnomalyForDistance(double distance, double eccentricity, double semiMajorAxis, double periapsisDistance)
+    {
+        if (eccentricity < 1.0)
+        {
+            return Math.Acos((semiMajorAxis * (1d - eccentricity * eccentricity) - distance) / (distance * eccentricity));
+        }
+        else if (eccentricity > 1.0)
+        {
+            return Math.Acos((semiMajorAxis * (eccentricity * eccentricity - 1d) - distance) / (distance * eccentricity));
+        }
+        else
+        {
+            return Math.Acos((periapsisDistance / distance) - 1d);
+        }
+    }
 }

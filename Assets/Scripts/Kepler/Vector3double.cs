@@ -42,6 +42,13 @@ public struct Vector3d
         this.z = z;
     }
 
+    public Vector3d(Vector3 pos)
+    {
+        this.x = pos.x;
+        this.y = pos.y;
+        this.z = pos.z;
+    }
+
     public Vector3d(float x, float y, float z)
     {
         this.x = x;
