@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using static UnityEngine.UI.Image;
 
 [Serializable]
 public class OrbitData
@@ -430,5 +431,57 @@ public class OrbitData
         UpdateOrbitAnomaliesByTime(deltaTime);
         SetPositionByCurrentAnomaly();
         SetVelocityByCurrentAnomaly();
+    }
+
+    /// <summary>
+    /// Повертає центральну позицію при істинної аномалії.
+    /// </summary>
+    public Vector3d GetCentralPositionAtTrueAnomaly(double trueAnomaly)
+    {
+        double ecc = Utils.ConvertTrueToEccentricAnomaly(trueAnomaly, Eccentricity);
+        return GetCentralPositionAtEccentricAnomaly(ecc);
+    }
+
+    /// <summary>
+    /// Повертає фокальну позицію при істинній аномалії
+    /// </summary>
+    public Vector3d GetFocalPositionAtTrueAnomaly(double trueAnomaly)
+    {
+        return GetCentralPositionAtTrueAnomaly(trueAnomaly) + CenterPoint;
+    }
+
+    public void GetOrbitPoints(ref Vector3d[] orbitPoints, int orbitPointsCount, Vector3d gravitySourceOrigin, double maxDistance = 500d)
+    {
+        if (orbitPointsCount < 2)
+        {
+            orbitPoints = new Vector3d[0];
+            return;
+        }
+        if (Eccentricity < 1)
+        {
+            if (orbitPoints == null || orbitPoints.Length != orbitPointsCount)
+            {
+                orbitPoints = new Vector3d[orbitPointsCount];
+            }
+            for (int i = 0; i < orbitPointsCount; i++)
+            {
+                orbitPoints[i] = GetFocalPositionAtEccentricAnomaly(i * Utils.PI_2 / (orbitPointsCount - 1)) + gravitySourceOrigin;
+            }
+        }
+        else
+        {
+            if (maxDistance < PeriapsisDistance)
+            {
+                orbitPoints = new Vector3d[0];
+                return;
+            }
+
+            double maxAngle = Utils.CalcTrueAnomalyForDistance(maxDistance, Eccentricity, SemiMajorAxis, PeriapsisDistance);
+
+            for (int i = 0; i < orbitPointsCount; i++)
+            {
+                orbitPoints[i] = GetFocalPositionAtTrueAnomaly(-maxAngle + i * 2d * maxAngle / (orbitPointsCount - 1)) + gravitySourceOrigin;
+            }
+        }
     }
 }
