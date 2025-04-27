@@ -1,64 +1,130 @@
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class FloatingOrigin : MonoBehaviour
 {
-    [Tooltip("Ціль, відносно якої центрируємо світ — зазвичай ракета або Main Camera")]
-    public Transform target;
+    [Tooltip("Point of reference from which to check the distance to origin.")]
+    public Transform ReferenceObject = null;
 
-    [Tooltip("Поріг, при якому відбувається зсув світу")]
-    public float threshold = 50000f;
+    [Tooltip("Distance from the origin the reference object must be in order to trigger an origin shift.")]
+    public float Threshold = 5000f;
 
-    private List<Rigidbody> shiftableRigidbodies = new List<Rigidbody>();
+    [Header("Options")]
+    [Tooltip("When true, origin shifts are considered only from the horizontal distance to orign.")]
+    public bool Use2DDistance = false;
 
-    void Start()
-    {
-        if (target == null)
-        {
-            Debug.LogError("FloatingOrigin: Target не встановлено.");
-            return;
-        }
+    [Tooltip("When true, updates ALL open scenes. When false, updates only the active scene.")]
+    public bool UpdateAllScenes = true;
 
-        // Автоматичне заповнення списку всіх Rigidbody, крім цільового
-        Rigidbody[] allBodies = FindObjectsOfType<Rigidbody>();
-        foreach (Rigidbody rb in allBodies)
-        {
-            if (rb.transform != target)
-                shiftableRigidbodies.Add(rb);
-        }
-    }
+    [Tooltip("Should ParticleSystems be moved with an origin shift.")]
+    public bool UpdateParticles = true;
+
+    [Tooltip("Should TrailRenderers be moved with an origin shift.")]
+    public bool UpdateTrailRenderers = true;
+
+    [Tooltip("Should LineRenderers be moved with an origin shift.")]
+    public bool UpdateLineRenderers = true;
+
+    private ParticleSystem.Particle[] parts = null;
 
     void LateUpdate()
     {
-        if (target == null) return;
+        if (ReferenceObject == null)
+            return;
 
-        // Якщо target занадто далеко від (0, 0, 0), зсуваємо все
-        if (target.position.magnitude > threshold)
+        Vector3 referencePosition = ReferenceObject.position;
+
+        if (Use2DDistance)
+            referencePosition.y = 0f;
+
+        if (referencePosition.magnitude > Threshold)
         {
-            Vector3 offset = target.position;
+            MoveRootTransforms(referencePosition);
 
-            // Переміщуємо всі об'єкти
-            foreach (var rb in shiftableRigidbodies)
+            if (UpdateParticles)
+                MoveParticles(referencePosition);
+
+            if (UpdateTrailRenderers)
+                MoveTrailRenderers(referencePosition);
+
+            if (UpdateLineRenderers)
+                MoveLineRenderers(referencePosition);
+        }
+    }
+
+    private void MoveRootTransforms(Vector3 offset)
+    {
+        if (UpdateAllScenes)
+        {
+            for (int z = 0; z < SceneManager.sceneCount; z++)
             {
-                if (rb == null) continue;
+                foreach (GameObject g in SceneManager.GetSceneAt(z).GetRootGameObjects())
+                    g.transform.position -= offset;
+            }
+        }
+        else
+        {
+            foreach (GameObject g in SceneManager.GetActiveScene().GetRootGameObjects())
+                g.transform.position -= offset;
+        }
+    }
 
-                bool wasKinematic = rb.isKinematic;
-                rb.isKinematic = true; // щоб не взаємодіяло з фізикою під час зсуву
-                rb.position -= offset;
-                rb.isKinematic = wasKinematic;
+    private void MoveTrailRenderers(Vector3 offset)
+    {
+        var trails = FindObjectsOfType<TrailRenderer>() as TrailRenderer[];
+        foreach (var trail in trails)
+        {
+            Vector3[] positions = new Vector3[trail.positionCount];
+
+            int positionCount = trail.GetPositions(positions);
+            for (int i = 0; i < positionCount; ++i)
+                positions[i] -= offset;
+
+            trail.SetPositions(positions);
+        }
+    }
+
+    private void MoveLineRenderers(Vector3 offset)
+    {
+        var lines = FindObjectsOfType<LineRenderer>() as LineRenderer[];
+        foreach (var line in lines)
+        {
+            Vector3[] positions = new Vector3[line.positionCount];
+
+            int positionCount = line.GetPositions(positions);
+            for (int i = 0; i < positionCount; ++i)
+                positions[i] -= offset;
+
+            line.SetPositions(positions);
+        }
+    }
+
+    private void MoveParticles(Vector3 offset)
+    {
+        var particles = FindObjectsOfType<ParticleSystem>() as ParticleSystem[];
+        foreach (ParticleSystem system in particles)
+        {
+            if (system.main.simulationSpace != ParticleSystemSimulationSpace.World)
+                continue;
+
+            int particlesNeeded = system.main.maxParticles;
+
+            if (particlesNeeded <= 0)
+                continue;
+
+            if (parts == null || parts.Length < particlesNeeded)
+            {
+                parts = new ParticleSystem.Particle[particlesNeeded];
             }
 
-            // Переміщуємо WorldRoot, якщо він відмінний від target
-            if (transform != target)
-                transform.position -= offset;
+            int num = system.GetParticles(parts);
 
-            var bodies = FindObjectsOfType<OrbitRenderer>();
-            foreach (var body in bodies)
+            for (int i = 0; i < num; i++)
             {
-                body.DrawOrbit();
+                parts[i].position -= offset;
             }
 
-            Debug.Log($"FloatingOrigin: зсув світу на {offset}");
+            system.SetParticles(parts, num);
         }
     }
 }
