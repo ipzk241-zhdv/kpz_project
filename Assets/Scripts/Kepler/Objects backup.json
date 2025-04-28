@@ -1,0 +1,686 @@
+{
+    "orbits": [
+        {
+            "objectName": "mercuryBarycenter",
+            "attractorName": "sun",
+            "G": 6.6743e-11,
+            "MG": 1172385494914498600.0,
+            "GravConst": 6.674300001563438e-11,
+            "AttractorMass": 1.7565669727759768e28,
+            "SemiMinorAxis": 13600954883.17789,
+            "SemiMajorAxis": 13600954928.85467,
+            "FocalParameter": 13600954837.501114,
+            "Eccentricity": 0.00008195548478018289,
+            "Period": 9204469.272124654,
+            "TrueAnomaly": 0.0,
+            "MeanAnomaly": 0.0,
+            "EccentricAnomaly": 0.0,
+            "MeanMotion": 6.826233128082639e-7,
+            "Periapsis": {
+                "x": 13599840256.000002,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "PeriapsisDistance": 13599840256.000002,
+            "Apoapsis": {
+                "x": -13602069601.709338,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "ApoapsisDistance": 13602069601.709338,
+            "CenterPoint": {
+                "x": -1114672.8546677023,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "OrbitCompressionRatio": 0.9999999932832985,
+            "OrbitNormal": {
+                "x": 0.0,
+                "y": -1.0,
+                "z": 0.0
+            },
+            "SemiMinorAxisBasis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": -1.0
+            },
+            "SemiMajorAxisBasis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "OrbitNormalDotEclipticNormal": 0.0,
+            "positionRelativeToAttractor": {
+                "x": 13599840256.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "velocityRelativeToAttractor": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 9285.08984375
+            },
+            "AttractorDistance": 13599840256.0
+        },
+        {
+            "objectName": "venusBarycenter",
+            "attractorName": "sun",
+            "G": 6.6743e-11,
+            "MG": 1172385494914498600.0,
+            "GravConst": 6.674300001563438e-11,
+            "AttractorMass": 1.7565669727759768e28,
+            "SemiMinorAxis": 13600954883.17789,
+            "SemiMajorAxis": 13600954928.85467,
+            "FocalParameter": 13600954837.501114,
+            "Eccentricity": 0.00008195548478018289,
+            "Period": 9204469.272124654,
+            "TrueAnomaly": 0.0,
+            "MeanAnomaly": 0.0,
+            "EccentricAnomaly": 0.0,
+            "MeanMotion": 6.826233128082639e-7,
+            "Periapsis": {
+                "x": 13599840256.000002,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "PeriapsisDistance": 13599840256.000002,
+            "Apoapsis": {
+                "x": -13602069601.709338,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "ApoapsisDistance": 13602069601.709338,
+            "CenterPoint": {
+                "x": -1114672.8546677023,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "OrbitCompressionRatio": 0.9999999932832985,
+            "OrbitNormal": {
+                "x": 0.0,
+                "y": -1.0,
+                "z": 0.0
+            },
+            "SemiMinorAxisBasis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": -1.0
+            },
+            "SemiMajorAxisBasis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "OrbitNormalDotEclipticNormal": 0.0,
+            "positionRelativeToAttractor": {
+                "x": 13599840256.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "velocityRelativeToAttractor": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 9285.08984375
+            },
+            "AttractorDistance": 13599840256.0
+        },
+        {
+            "objectName": "marsBarycenter",
+            "attractorName": "sun",
+            "G": 6.6743e-11,
+            "MG": 1172385494914498600.0,
+            "GravConst": 6.674300001563438e-11,
+            "AttractorMass": 1.7565669727759768e28,
+            "SemiMinorAxis": 20700652371.697595,
+            "SemiMajorAxis": 20727551248.067338,
+            "FocalParameter": 20673788402.951108,
+            "Eccentricity": 0.050929231499600827,
+            "Period": 17316760.340148026,
+            "TrueAnomaly": 3.141592680287989,
+            "MeanAnomaly": 3.141592680713838,
+            "EccentricAnomaly": 3.1415926793993758,
+            "MeanMotion": 3.6283838222397506e-7,
+            "Periapsis": {
+                "x": -19671912992.134675,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "PeriapsisDistance": 19671912992.134675,
+            "Apoapsis": {
+                "x": 21783189504.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "ApoapsisDistance": 21783189504.0,
+            "CenterPoint": {
+                "x": 1055638255.9326614,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "OrbitCompressionRatio": 0.99740621337886,
+            "OrbitNormal": {
+                "x": 0.0,
+                "y": -1.0,
+                "z": 0.0
+            },
+            "SemiMinorAxisBasis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+            },
+            "SemiMajorAxisBasis": {
+                "x": -1.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "OrbitNormalDotEclipticNormal": 0.0,
+            "positionRelativeToAttractor": {
+                "x": 21783189504.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "velocityRelativeToAttractor": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 7147.0
+            },
+            "AttractorDistance": 21783189504.0
+        },
+        {
+            "objectName": "deimos",
+            "attractorName": "marsBarycenter",
+            "G": 6.6743e-11,
+            "MG": 30101093117.158205,
+            "GravConst": 6.674300001563438e-11,
+            "AttractorMass": 451000001649717540000.0,
+            "SemiMinorAxis": 1697084.7694247815,
+            "SemiMajorAxis": 1701605.9702167167,
+            "FocalParameter": 1692575.5815529696,
+            "Eccentricity": 0.0728490211977684,
+            "Period": 80385.41083890043,
+            "TrueAnomaly": 2.7062457261900216,
+            "MeanAnomaly": 2.641625425749719,
+            "EccentricAnomaly": 2.674433127100351,
+            "MeanMotion": 0.00007816325427224186,
+            "Periapsis": {
+                "x": 1329164.2328160434,
+                "y": -532458.2458312744,
+                "z": -662402.012869793
+            },
+            "PeriapsisDistance": 1577645.6408221499,
+            "Apoapsis": {
+                "x": -1538037.039048362,
+                "y": 616131.9147899156,
+                "z": 766495.8214948697
+            },
+            "ApoapsisDistance": 1825566.299611284,
+            "CenterPoint": {
+                "x": -104436.40311615929,
+                "y": 41836.83447932061,
+                "z": 52046.904312538325
+            },
+            "OrbitCompressionRatio": 0.9946930201105271,
+            "OrbitNormal": {
+                "x": 0.3296156268390882,
+                "y": 0.9394484852416466,
+                "z": -0.093755437819098
+            },
+            "SemiMinorAxisBasis": {
+                "x": 0.4260864456352428,
+                "y": -0.05940604004176516,
+                "z": 0.9027298949588861
+            },
+            "SemiMajorAxisBasis": {
+                "x": 0.8424985931082618,
+                "y": -0.3375018014525729,
+                "z": -0.41986742506042049
+            },
+            "OrbitNormalDotEclipticNormal": -0.093755437819098,
+            "positionRelativeToAttractor": {
+                "x": -1710080.0,
+                "y": 600000.0,
+                "z": 0.0
+            },
+            "velocityRelativeToAttractor": {
+                "x": 0.0,
+                "y": 12.375,
+                "z": 124.00000762939453
+            },
+            "AttractorDistance": 1812284.0854568028
+        },
+        {
+            "objectName": "phobos",
+            "attractorName": "marsBarycenter",
+            "G": 6.6743e-11,
+            "MG": 30101093117.158205,
+            "GravConst": 6.674300001563438e-11,
+            "AttractorMass": 451000001649717540000.0,
+            "SemiMinorAxis": 1152615.566308185,
+            "SemiMajorAxis": 1153922.8037165942,
+            "FocalParameter": 1151309.8098217545,
+            "Eccentricity": 0.04758617742666021,
+            "Period": 44890.44066258412,
+            "TrueAnomaly": 3.141592680287989,
+            "MeanAnomaly": 3.141592680627555,
+            "EccentricAnomaly": 3.1415926793993758,
+            "MeanMotion": 0.00013996711135911375,
+            "Periapsis": {
+                "x": 1037101.0592902579,
+                "y": -363660.32431351617,
+                "z": 0.0
+            },
+            "PeriapsisDistance": 1099012.028442267,
+            "Apoapsis": {
+                "x": -1140736.0,
+                "y": 400000.0,
+                "z": 0.0
+            },
+            "ApoapsisDistance": 1208833.5789909214,
+            "CenterPoint": {
+                "x": -51817.470354871046,
+                "y": 18169.83784324194,
+                "z": 0.0
+            },
+            "OrbitCompressionRatio": 0.9977355557179184,
+            "OrbitNormal": {
+                "x": -0.3308974923859259,
+                "y": -0.943666704685879,
+                "z": 0.0
+            },
+            "SemiMinorAxisBasis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": -1.0
+            },
+            "SemiMajorAxisBasis": {
+                "x": 0.9436667046858791,
+                "y": -0.330897492385926,
+                "z": 0.0
+            },
+            "OrbitNormalDotEclipticNormal": 0.0,
+            "positionRelativeToAttractor": {
+                "x": -1140736.0,
+                "y": 400000.0,
+                "z": 0.0
+            },
+            "velocityRelativeToAttractor": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": -154.0
+            },
+            "AttractorDistance": 1208833.5789909214
+        },
+        {
+            "objectName": "jupiterBarycenter",
+            "attractorName": "sun",
+            "G": 6.6743e-11,
+            "MG": 1172385494914498600.0,
+            "GravConst": 6.674300001563438e-11,
+            "AttractorMass": 1.7565669727759768e28,
+            "SemiMinorAxis": 13600954883.17789,
+            "SemiMajorAxis": 13600954928.85467,
+            "FocalParameter": 13600954837.501114,
+            "Eccentricity": 0.00008195548478018289,
+            "Period": 9204469.272124654,
+            "TrueAnomaly": 0.0,
+            "MeanAnomaly": 0.0,
+            "EccentricAnomaly": 0.0,
+            "MeanMotion": 6.826233128082639e-7,
+            "Periapsis": {
+                "x": 13599840256.000002,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "PeriapsisDistance": 13599840256.000002,
+            "Apoapsis": {
+                "x": -13602069601.709338,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "ApoapsisDistance": 13602069601.709338,
+            "CenterPoint": {
+                "x": -1114672.8546677023,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "OrbitCompressionRatio": 0.9999999932832985,
+            "OrbitNormal": {
+                "x": 0.0,
+                "y": -1.0,
+                "z": 0.0
+            },
+            "SemiMinorAxisBasis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": -1.0
+            },
+            "SemiMajorAxisBasis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "OrbitNormalDotEclipticNormal": 0.0,
+            "positionRelativeToAttractor": {
+                "x": 13599840256.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "velocityRelativeToAttractor": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 9285.08984375
+            },
+            "AttractorDistance": 13599840256.0
+        },
+        {
+            "objectName": "saturnBarycenter",
+            "attractorName": "sun",
+            "G": 6.6743e-11,
+            "MG": 1172385494914498600.0,
+            "GravConst": 6.674300001563438e-11,
+            "AttractorMass": 1.7565669727759768e28,
+            "SemiMinorAxis": 13600954883.17789,
+            "SemiMajorAxis": 13600954928.85467,
+            "FocalParameter": 13600954837.501114,
+            "Eccentricity": 0.00008195548478018289,
+            "Period": 9204469.272124654,
+            "TrueAnomaly": 0.0,
+            "MeanAnomaly": 0.0,
+            "EccentricAnomaly": 0.0,
+            "MeanMotion": 6.826233128082639e-7,
+            "Periapsis": {
+                "x": 13599840256.000002,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "PeriapsisDistance": 13599840256.000002,
+            "Apoapsis": {
+                "x": -13602069601.709338,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "ApoapsisDistance": 13602069601.709338,
+            "CenterPoint": {
+                "x": -1114672.8546677023,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "OrbitCompressionRatio": 0.9999999932832985,
+            "OrbitNormal": {
+                "x": 0.0,
+                "y": -1.0,
+                "z": 0.0
+            },
+            "SemiMinorAxisBasis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": -1.0
+            },
+            "SemiMajorAxisBasis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "OrbitNormalDotEclipticNormal": 0.0,
+            "positionRelativeToAttractor": {
+                "x": 13599840256.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "velocityRelativeToAttractor": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 9285.08984375
+            },
+            "AttractorDistance": 13599840256.0
+        },
+        {
+            "objectName": "uranusBarycenter",
+            "attractorName": "sun",
+            "G": 6.6743e-11,
+            "MG": 1172385494914498600.0,
+            "GravConst": 6.674300001563438e-11,
+            "AttractorMass": 1.7565669727759768e28,
+            "SemiMinorAxis": 13600954883.17789,
+            "SemiMajorAxis": 13600954928.85467,
+            "FocalParameter": 13600954837.501114,
+            "Eccentricity": 0.00008195548478018289,
+            "Period": 9204469.272124654,
+            "TrueAnomaly": 0.0,
+            "MeanAnomaly": 0.0,
+            "EccentricAnomaly": 0.0,
+            "MeanMotion": 6.826233128082639e-7,
+            "Periapsis": {
+                "x": 13599840256.000002,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "PeriapsisDistance": 13599840256.000002,
+            "Apoapsis": {
+                "x": -13602069601.709338,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "ApoapsisDistance": 13602069601.709338,
+            "CenterPoint": {
+                "x": -1114672.8546677023,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "OrbitCompressionRatio": 0.9999999932832985,
+            "OrbitNormal": {
+                "x": 0.0,
+                "y": -1.0,
+                "z": 0.0
+            },
+            "SemiMinorAxisBasis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": -1.0
+            },
+            "SemiMajorAxisBasis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "OrbitNormalDotEclipticNormal": 0.0,
+            "positionRelativeToAttractor": {
+                "x": 13599840256.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "velocityRelativeToAttractor": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 9285.08984375
+            },
+            "AttractorDistance": 13599840256.0
+        },
+        {
+            "objectName": "neptuneBarycenter",
+            "attractorName": "sun",
+            "G": 6.6743e-11,
+            "MG": 1172385494914498600.0,
+            "GravConst": 6.674300001563438e-11,
+            "AttractorMass": 1.7565669727759768e28,
+            "SemiMinorAxis": 13600954883.17789,
+            "SemiMajorAxis": 13600954928.85467,
+            "FocalParameter": 13600954837.501114,
+            "Eccentricity": 0.00008195548478018289,
+            "Period": 9204469.272124654,
+            "TrueAnomaly": 0.0,
+            "MeanAnomaly": 0.0,
+            "EccentricAnomaly": 0.0,
+            "MeanMotion": 6.826233128082639e-7,
+            "Periapsis": {
+                "x": 13599840256.000002,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "PeriapsisDistance": 13599840256.000002,
+            "Apoapsis": {
+                "x": -13602069601.709338,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "ApoapsisDistance": 13602069601.709338,
+            "CenterPoint": {
+                "x": -1114672.8546677023,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "OrbitCompressionRatio": 0.9999999932832985,
+            "OrbitNormal": {
+                "x": 0.0,
+                "y": -1.0,
+                "z": 0.0
+            },
+            "SemiMinorAxisBasis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": -1.0
+            },
+            "SemiMajorAxisBasis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "OrbitNormalDotEclipticNormal": 0.0,
+            "positionRelativeToAttractor": {
+                "x": 13599840256.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "velocityRelativeToAttractor": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 9285.08984375
+            },
+            "AttractorDistance": 13599840256.0
+        },
+        {
+            "objectName": "earthBarycenter",
+            "attractorName": "sun",
+            "G": 6.6743e-11,
+            "MG": 1172385494914498600.0,
+            "GravConst": 6.674300001563438e-11,
+            "AttractorMass": 1.7565669727759768e28,
+            "SemiMinorAxis": 13600954883.17789,
+            "SemiMajorAxis": 13600954928.85467,
+            "FocalParameter": 13600954837.501114,
+            "Eccentricity": 0.00008195548478018289,
+            "Period": 9204469.272124654,
+            "TrueAnomaly": 0.0,
+            "MeanAnomaly": 0.0,
+            "EccentricAnomaly": 0.0,
+            "MeanMotion": 6.826233128082639e-7,
+            "Periapsis": {
+                "x": 13599840256.000002,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "PeriapsisDistance": 13599840256.000002,
+            "Apoapsis": {
+                "x": -13602069601.709338,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "ApoapsisDistance": 13602069601.709338,
+            "CenterPoint": {
+                "x": -1114672.8546677023,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "OrbitCompressionRatio": 0.9999999932832985,
+            "OrbitNormal": {
+                "x": 0.0,
+                "y": -1.0,
+                "z": 0.0
+            },
+            "SemiMinorAxisBasis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": -1.0
+            },
+            "SemiMajorAxisBasis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "OrbitNormalDotEclipticNormal": 0.0,
+            "positionRelativeToAttractor": {
+                "x": 13599840256.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "velocityRelativeToAttractor": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 9285.08984375
+            },
+            "AttractorDistance": 13599840256.0
+        },
+        {
+            "objectName": "moon",
+            "attractorName": "earth",
+            "G": 6.6743e-11,
+            "MG": 3530704820900.0,
+            "GravConst": 6.674300001563438e-11,
+            "AttractorMass": 5.2900001799034229e22,
+            "SemiMinorAxis": 11544451.677567836,
+            "SemiMajorAxis": 11545364.418974823,
+            "FocalParameter": 11543539.008319412,
+            "Eccentricity": 0.012574087201286721,
+            "Period": 131177.88711999003,
+            "TrueAnomaly": 0.0,
+            "MeanAnomaly": 0.0,
+            "EccentricAnomaly": 0.0,
+            "MeanMotion": 0.0000478982048356389,
+            "Periapsis": {
+                "x": -11400192.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "PeriapsisDistance": 11400192.0,
+            "Apoapsis": {
+                "x": 11690536.837949645,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "ApoapsisDistance": 11690536.837949645,
+            "CenterPoint": {
+                "x": 145172.41897482243,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "OrbitCompressionRatio": 0.9998418923310545,
+            "OrbitNormal": {
+                "x": 0.0,
+                "y": -1.0,
+                "z": 0.0
+            },
+            "SemiMinorAxisBasis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+            },
+            "SemiMajorAxisBasis": {
+                "x": -1.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "OrbitNormalDotEclipticNormal": 0.0,
+            "positionRelativeToAttractor": {
+                "x": -11400192.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "velocityRelativeToAttractor": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": -560.0
+            },
+            "AttractorDistance": 11400192.0
+        }
+    ]
+}
