@@ -1,11 +1,12 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(OrbitMover))]
 public class RocketController : MonoBehaviour
 {
     [Header("Thrust Settings")]
-    public float maxThrust = 1;               // Максимальна сила двигуна
-    public float thrustChangeSpeed = 0.1f;       // Швидкість зміни дроселя (в секунду)
+    public float maxThrust = 50;
+    public float thrustChangeSpeed = 0.1f;
 
     [Header("Rotation Settings")]
     public float pitchSpeed = 0.1f;
@@ -13,13 +14,15 @@ public class RocketController : MonoBehaviour
     public float rollSpeed = 0.1f;
 
     [Range(0f, 1f)]
-    private float currentThrust = 0f;            // Дросель: 0.0 - 1.0
+    private float currentThrust = 0f;
 
     private Rigidbody rb;
+    private OrbitMover orbitMover;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        orbitMover = GetComponent<OrbitMover>();
     }
 
     void Update()
@@ -58,8 +61,19 @@ public class RocketController : MonoBehaviour
 
     void ApplyThrust()
     {
+        if (orbitMover == null || !orbitMover.orbitData.IsValidOrbit)
+            return;
+
         float thrustForce = currentThrust * maxThrust;
-        rb.AddForce(transform.forward * thrustForce);
+        if (thrustForce <= 0f)
+            return;
+
+        Vector3 thrustDirection = transform.forward;
+
+        Vector3d deltaVelocity = new Vector3d(thrustDirection.x, thrustDirection.y, thrustDirection.z) * thrustForce * Time.fixedDeltaTime;
+        orbitMover.orbitData.velocityRelativeToAttractor += deltaVelocity;
+
+        orbitMover.orbitData.CalculateOrbitStateFromOrbitalVectors();
     }
 
     void ApplyRotation()

@@ -1,8 +1,11 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+[ExecuteAlways]
 public class FloatingOrigin : MonoBehaviour
 {
+    public bool ExecuteAlways = false;
+
     [Tooltip("Point of reference from which to check the distance to origin.")]
     public Transform ReferenceObject = null;
 
@@ -31,6 +34,11 @@ public class FloatingOrigin : MonoBehaviour
     {
         if (ReferenceObject == null)
             return;
+
+#if UNITY_EDITOR
+        if (!ExecuteAlways && !Application.isPlaying)
+            return;
+#endif
 
         Vector3 referencePosition = ReferenceObject.position;
 

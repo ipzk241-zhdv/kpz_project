@@ -8,6 +8,10 @@ using UnityEngine;
 [RequireComponent(typeof(Transform))]
 public class OrbitMover : MonoBehaviour
 {
+    [Header("Debug Thrust Settings")]
+    public bool ApplyTestThrust = false;
+    public float TestThrustForce = 0.01f;
+
     /// <summary>
     /// Налаштування гравітаційного джерела. Об'єкт притягання повинен бути призначений.
     /// </summary>
@@ -79,6 +83,26 @@ public class OrbitMover : MonoBehaviour
             StopCoroutine(_updateRoutine);
             _updateRoutine = null;
         }
+    }
+
+    private void FixedUpdate()
+    {
+        if (ApplyTestThrust)
+        {
+            // Глобальний напрямок +X
+            Vector3 worldDirection = Vector3.left;
+            ApplyThrust(worldDirection, TestThrustForce, Time.fixedDeltaTime);
+        }
+    }
+
+    /// <summary>
+    /// Додає тягу в заданому напрямку.
+    /// </summary>
+    public void ApplyThrust(Vector3 worldDirection, float thrustForce, float deltaTime)
+    {
+        Vector3d impulse = new Vector3d(worldDirection.normalized) * thrustForce * deltaTime;
+        orbitData.velocityRelativeToAttractor += impulse;
+        orbitData.CalculateOrbitStateFromOrbitalVectors();
     }
 
     private void Update()
