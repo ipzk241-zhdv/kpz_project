@@ -6,7 +6,7 @@ using UnityEngine;
 [SelectionBase]
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Transform))]
-public class OrbitMover : MonoBehaviour, ITimeScalable
+public class OrbitMover : MonoBehaviour, IScalableAndGravityReceiver
 {
     [Header("Debug Thrust Settings")]
     public bool ApplyTestThrust = false;

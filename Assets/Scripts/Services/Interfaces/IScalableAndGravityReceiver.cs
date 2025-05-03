@@ -1,4 +1,4 @@
-public interface ITimeScalable
+public interface IScalableAndGravityReceiver
 {
     void OnTimeScaleChanged(float newScale);
 }
