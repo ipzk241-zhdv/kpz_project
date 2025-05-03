@@ -6,8 +6,8 @@ using UnityEngine;
 [SelectionBase]
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Transform))]
-public class OrbitMover : MonoBehaviour
-{
+public class OrbitMover : MonoBehaviour, IScalableAndGravityReceiver
+{ 
     /// <summary>
     /// Налаштування гравітаційного джерела. Об'єкт притягання повинен бути призначений.
     /// </summary>
@@ -70,6 +70,19 @@ public class OrbitMover : MonoBehaviour
         }
 
         _updateRoutine = StartCoroutine(OrbitUpdateLoop());
+    }
+
+    private void Start()
+    {
+        TimeWarpManager.Instance.Register(this);
+        TimeWarpManager.Instance.Register(AttractorSettings);
+        OnTimeScaleChanged(TimeWarpManager.Instance.CurrentTimeScale);
+        AttractorSettings.OnGravityConstantChanged(TimeWarpManager.Instance.CurrentG);
+    }
+
+    public void OnTimeScaleChanged(float timeScale)
+    {
+        TimeScale = timeScale;
     }
 
     private void OnDisable()

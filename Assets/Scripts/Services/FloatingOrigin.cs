@@ -1,8 +1,12 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+[ExecuteAlways]
 public class FloatingOrigin : MonoBehaviour
 {
+    public static FloatingOrigin Instance { get; private set; }
+    public bool ExecuteAlways = false;
+
     [Tooltip("Point of reference from which to check the distance to origin.")]
     public Transform ReferenceObject = null;
 
@@ -27,10 +31,26 @@ public class FloatingOrigin : MonoBehaviour
 
     private ParticleSystem.Particle[] parts = null;
 
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            DestroyImmediate(gameObject);
+            return;
+        }
+
+        Instance = this;
+    }
+
     void LateUpdate()
     {
         if (ReferenceObject == null)
             return;
+
+#if UNITY_EDITOR
+        if (!ExecuteAlways && !Application.isPlaying)
+            return;
+#endif
 
         Vector3 referencePosition = ReferenceObject.position;
 
