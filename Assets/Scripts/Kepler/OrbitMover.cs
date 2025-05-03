@@ -6,7 +6,7 @@ using UnityEngine;
 [SelectionBase]
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Transform))]
-public class OrbitMover : MonoBehaviour
+public class OrbitMover : MonoBehaviour, ITimeScalable
 {
     [Header("Debug Thrust Settings")]
     public bool ApplyTestThrust = false;
@@ -76,6 +76,19 @@ public class OrbitMover : MonoBehaviour
         _updateRoutine = StartCoroutine(OrbitUpdateLoop());
     }
 
+    private void Start()
+    {
+        TimeWarpManager.Instance.Register(this);
+        TimeWarpManager.Instance.Register(AttractorSettings);
+        OnTimeScaleChanged(TimeWarpManager.Instance.CurrentTimeScale);
+        AttractorSettings.OnGravityConstantChanged(TimeWarpManager.Instance.CurrentG);
+    }
+
+    public void OnTimeScaleChanged(float timeScale)
+    {
+        TimeScale = timeScale;
+    }
+
     private void OnDisable()
     {
         if (_updateRoutine != null)
@@ -83,26 +96,6 @@ public class OrbitMover : MonoBehaviour
             StopCoroutine(_updateRoutine);
             _updateRoutine = null;
         }
-    }
-
-    private void FixedUpdate()
-    {
-        if (ApplyTestThrust)
-        {
-            // Глобальний напрямок +X
-            Vector3 worldDirection = Vector3.left;
-            ApplyThrust(worldDirection, TestThrustForce, Time.fixedDeltaTime);
-        }
-    }
-
-    /// <summary>
-    /// Додає тягу в заданому напрямку.
-    /// </summary>
-    public void ApplyThrust(Vector3 worldDirection, float thrustForce, float deltaTime)
-    {
-        Vector3d impulse = new Vector3d(worldDirection.normalized) * thrustForce * deltaTime;
-        orbitData.velocityRelativeToAttractor += impulse;
-        orbitData.CalculateOrbitStateFromOrbitalVectors();
     }
 
     private void Update()
