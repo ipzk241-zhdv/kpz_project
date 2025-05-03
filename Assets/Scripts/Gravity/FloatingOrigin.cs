@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 [ExecuteAlways]
 public class FloatingOrigin : MonoBehaviour
 {
+    public static FloatingOrigin Instance { get; private set; }
     public bool ExecuteAlways = false;
 
     [Tooltip("Point of reference from which to check the distance to origin.")]
@@ -29,6 +30,17 @@ public class FloatingOrigin : MonoBehaviour
     public bool UpdateLineRenderers = true;
 
     private ParticleSystem.Particle[] parts = null;
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            DestroyImmediate(gameObject);
+            return;
+        }
+
+        Instance = this;
+    }
 
     void LateUpdate()
     {
