@@ -7,11 +7,7 @@ using UnityEngine;
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Transform))]
 public class OrbitMover : MonoBehaviour, IScalableAndGravityReceiver
-{
-    [Header("Debug Thrust Settings")]
-    public bool ApplyTestThrust = false;
-    public float TestThrustForce = 0.01f;
-
+{ 
     /// <summary>
     /// Налаштування гравітаційного джерела. Об'єкт притягання повинен бути призначений.
     /// </summary>

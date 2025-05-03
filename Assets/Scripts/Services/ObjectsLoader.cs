@@ -9,6 +9,8 @@ using UnityEngine;
 [ExecuteAlways]
 public class ObjectsLoader : MonoBehaviour
 {
+    public static ObjectsLoader Instance { get; private set; }
+
     public GameObject rootObject;
     public bool AutoRoot = true;
     public double G;
@@ -31,10 +33,16 @@ public class ObjectsLoader : MonoBehaviour
         }
     }
 
-
-    void Start()
+    private void Awake()
     {
-        // LoadFromJSON();
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 
     private void OnEnable()
@@ -48,7 +56,6 @@ public class ObjectsLoader : MonoBehaviour
     [ContextMenu("Load from JSON")]
     public void LoadFromJSON()
     {
-        // «читати JSON з файлу
         string path = $"{Application.dataPath}/Scripts/Kepler/Objects.json";
         if (!File.Exists(path))
         {
