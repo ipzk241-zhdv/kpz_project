@@ -52,8 +52,11 @@ public class KeplerOrbitMoverEditor : Editor
         }
 
         EditorGUILayout.LabelField("Velocity", _target.orbitData.velocityRelativeToAttractor.magnitude.ToString("0.00000"));
-        EditorGUILayout.LabelField("Period", (_target.orbitData.Period/60/60/24).ToString("0.00000"));
-        EditorGUILayout.LabelField("Distance surface to surface", (_target.orbitData.AttractorDistance - _target.AttractorSettings.AttractorObject.transform.lossyScale.x / 2 - _target.transform.lossyScale.x / 2).ToString("0.00000"));
+        EditorGUILayout.LabelField("Period", (_target.orbitData.Period / 60 / 60 / 24).ToString("0.00000"));
+        if (_target.AttractorSettings.AttractorObject != null)
+        {
+            EditorGUILayout.LabelField("Distance surface to surface", (_target.orbitData.AttractorDistance - _target.AttractorSettings.AttractorObject.transform.lossyScale.x / 2 - _target.transform.lossyScale.x / 2).ToString("0.00000"));
+        }
 
         string inclinationRad = _target.orbitData.Inclination.ToString();
         string inclinationDeg = (_target.orbitData.Inclination * Utils.Rad2Deg).ToString("0.000");

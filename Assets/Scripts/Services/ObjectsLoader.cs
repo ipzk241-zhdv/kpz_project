@@ -1,8 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
@@ -42,7 +40,6 @@ public class ObjectsLoader : MonoBehaviour
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject);
     }
 
     private void OnEnable()
@@ -130,6 +127,8 @@ public class ObjectsLoader : MonoBehaviour
 
             mover.LockOrbitEditing = true;
         }
+
+        SOIController.Instance.BuildHierarchy();
     }
 
     [ContextMenu("Save to JSON")]

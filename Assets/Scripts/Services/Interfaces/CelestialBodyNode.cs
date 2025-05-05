@@ -7,6 +7,7 @@ public class CelestialBodyNode
     public Transform Transform { get; }
 
     private readonly List<CelestialBodyNode> _children = new List<CelestialBodyNode>();
+    public double SphereOfInfluenceRadius { get; set; }
 
     public CelestialBodyNode(string name, Transform transform)
     {

@@ -293,8 +293,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 885d7bbd822c51343848b4c8f50e1e92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ApplyTestThrust: 0
-  TestThrustForce: 0.01
   AttractorSettings:
     AttractorObject: {fileID: 1314332204}
     AttractorMass: 4.5100000164971754e+20
@@ -452,8 +450,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 885d7bbd822c51343848b4c8f50e1e92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ApplyTestThrust: 0
-  TestThrustForce: 0.01
   AttractorSettings:
     AttractorObject: {fileID: 1314332204}
     AttractorMass: 4.5100000164971754e+20
@@ -833,8 +829,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0.0278, z: -0.0846875}
   m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 7520407116974944274}
+  m_Children: []
   m_Father: {fileID: 8179139125285943719}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &790411740
@@ -885,6 +880,37 @@ MonoBehaviour:
   - 2000
   gravityConstant: 0.000000000066743
   timeScale: 1
+--- !u!1 &934984831
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 934984832}
+  m_Layer: 0
+  m_Name: velocity
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &934984832
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 934984831}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1289635845}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &942867594
 GameObject:
   m_ObjectHideFlags: 0
@@ -1061,6 +1087,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1289635845}
+  - component: {fileID: 1289635847}
+  - component: {fileID: 1289635846}
   m_Layer: 0
   m_Name: sun
   m_TagString: Untagged
@@ -1082,8 +1110,98 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1788598011}
+  - {fileID: 934984832}
   m_Father: {fileID: 1347655621}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1289635846
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1289635844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2838c974a5c6c54d82df1bce798a96a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OrbitPointsCount: 30
+  maxDistance: 500
+  lrReference: {fileID: 0}
+  ShowGizmo: 1
+  OrbitColor: {r: 1, g: 0.98686177, b: 0, a: 1}
+  ShowOrbitGizmo: 1
+  ShowVelocityGizmo: 1
+--- !u!114 &1289635847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1289635844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 885d7bbd822c51343848b4c8f50e1e92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AttractorSettings:
+    AttractorObject: {fileID: 1347655621}
+    AttractorMass: 0
+    GravityConstant: 0.000000000066743
+  VelocityHandle: {fileID: 934984832}
+  VelocityHandleLengthScale: 0
+  TimeScale: 1
+  orbitData:
+    MG: 0
+    GravConst: 0.000000000066743
+    SemiMinorAxis: NaN
+    SemiMajorAxis: NaN
+    FocalParameter: NaN
+    Eccentricity: 0
+    Period: NaN
+    TrueAnomaly: 1.5707963401439946
+    MeanAnomaly: 1.5707963401439946
+    EccentricAnomaly: 1.5707963401439946
+    MeanMotion: NaN
+    Periapsis:
+      x: NaN
+      y: NaN
+      z: NaN
+    PeriapsisDistance: NaN
+    Apoapsis:
+      x: NaN
+      y: NaN
+      z: NaN
+    ApoapsisDistance: NaN
+    CenterPoint:
+      x: NaN
+      y: NaN
+      z: NaN
+    OrbitCompressionRatio: 1
+    OrbitNormal:
+      x: 0
+      y: 0
+      z: 0
+    SemiMinorAxisBasis:
+      x: 0
+      y: 0
+      z: 0
+    SemiMajorAxisBasis:
+      x: 0
+      y: 0
+      z: 0
+    OrbitNormalDotEclipticNormal: 0
+    positionRelativeToAttractor:
+      x: 0
+      y: 0
+      z: 0
+    velocityRelativeToAttractor:
+      x: 0
+      y: 0
+      z: 0
+    AttractorMass: 0
+    AttractorDistance: 0
+  LockOrbitEditing: 1
 --- !u!1 &1314332203
 GameObject:
   m_ObjectHideFlags: 0
@@ -1137,7 +1255,7 @@ MonoBehaviour:
   maxDistance: 500
   lrReference: {fileID: 0}
   ShowGizmo: 1
-  OrbitColor: {r: 0, g: 1, b: 0, a: 1}
+  OrbitColor: {r: 1, g: 0.12742881, b: 0, a: 1}
   ShowOrbitGizmo: 1
   ShowVelocityGizmo: 1
 --- !u!114 &1314332206
@@ -1152,8 +1270,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 885d7bbd822c51343848b4c8f50e1e92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ApplyTestThrust: 0
-  TestThrustForce: 0.01
   AttractorSettings:
     AttractorObject: {fileID: 1289635845}
     AttractorMass: 1.7565669727759768e+28
@@ -1278,10 +1394,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 885d7bbd822c51343848b4c8f50e1e92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ApplyTestThrust: 0
-  TestThrustForce: 0.01
   AttractorSettings:
-    AttractorObject: {fileID: 245696718}
+    AttractorObject: {fileID: 2143944231}
     AttractorMass: 5.2900001799034225e+22
     GravityConstant: 0.000000000066743
   VelocityHandle: {fileID: 1017459355}
@@ -1349,6 +1463,7 @@ GameObject:
   - component: {fileID: 1347655621}
   - component: {fileID: 1347655619}
   - component: {fileID: 1347655620}
+  - component: {fileID: 1347655622}
   m_Layer: 0
   m_Name: worldRoot
   m_TagString: Untagged
@@ -1409,6 +1524,19 @@ Transform:
   - {fileID: 1314332204}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1347655622
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1347655618}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 262e0670a8fa9944d9258c57d6629f5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ActiveRocket: {fileID: 8179139125285943719}
 --- !u!1 &1459052306
 GameObject:
   m_ObjectHideFlags: 0
@@ -1915,8 +2043,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 885d7bbd822c51343848b4c8f50e1e92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ApplyTestThrust: 0
-  TestThrustForce: 0.01
   AttractorSettings:
     AttractorObject: {fileID: 1289635845}
     AttractorMass: 1.7565669727759768e+28
@@ -2054,7 +2180,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7973728991157040042}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0.7071068, z: -0.7071068, w: 0}
+  m_LocalRotation: {x: 0.4911628, y: -0.5086837, z: -0.5086837, w: -0.4911628}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 134.0008, y: 67, z: 134}
   m_ConstrainProportionsScale: 0
@@ -2323,14 +2449,14 @@ Transform:
   m_GameObject: {fileID: 7528584749056852388}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -2.78, z: -1.2187495}
+  m_LocalPosition: {x: 0, y: 0, z: -9.6875}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3864314606524062723}
   - {fileID: 8539639920571691174}
   - {fileID: 3250064554719364711}
-  m_Father: {fileID: 790411739}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7528584749056852388
 GameObject:
@@ -2341,6 +2467,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7520407116974944274}
+  - component: {fileID: 7528584749056852389}
   m_Layer: 5
   m_Name: Navball things
   m_TagString: Untagged
@@ -2348,6 +2475,26 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1818360608 &7528584749056852389
+PositionConstraint:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7528584749056852388}
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Weight: 1
+  m_TranslationAtRest: {x: 0, y: 0, z: -9.6875}
+  m_TranslationOffset: {x: 11409714, y: 0, z: -9.6875}
+  m_AffectTranslationX: 1
+  m_AffectTranslationY: 1
+  m_AffectTranslationZ: 1
+  m_Active: 1
+  m_IsLocked: 0
+  m_Sources:
+  - sourceTransform: {fileID: 8179139125285943719}
+    weight: 1
 --- !u!1 &7973728991157040042
 GameObject:
   m_ObjectHideFlags: 0
@@ -2427,7 +2574,7 @@ Transform:
   m_GameObject: {fileID: 8847870259724198685}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -11409714, y: 0, z: 0}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2521,13 +2668,11 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8847870259724198685}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 885d7bbd822c51343848b4c8f50e1e92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ApplyTestThrust: 1
-  TestThrustForce: 3.52
   AttractorSettings:
     AttractorObject: {fileID: 245696718}
     AttractorMass: 5.2900001799034225e+22
@@ -2628,7 +2773,7 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
@@ -2640,3 +2785,4 @@ SceneRoots:
   - {fileID: 569516309}
   - {fileID: 1347655621}
   - {fileID: 8179139125285943719}
+  - {fileID: 7520407116974944274}
