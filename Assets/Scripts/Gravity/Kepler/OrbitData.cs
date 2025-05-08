@@ -484,4 +484,40 @@ public class OrbitData
             }
         }
     }
+
+    public double CalculateMeanAnomalyFromPosition()
+    {
+        // Відстань до центрального тіла
+        double r = positionRelativeToAttractor.magnitude;
+        // Визначаємо істинну аномалію
+        double cosTrue = Vector3d.Dot(positionRelativeToAttractor, SemiMajorAxisBasis) / r;
+        cosTrue = Math.Clamp(cosTrue, -1.0, 1.0);
+        double trueAnom = Math.Acos(cosTrue);
+        // Враховуємо напрямок обертання
+        if (Vector3d.Dot(Vector3d.Cross(SemiMajorAxisBasis, positionRelativeToAttractor), OrbitNormal) < 0)
+            trueAnom = Utils.PI_2 - trueAnom;
+
+        double M;
+        if (Eccentricity < 1.0)
+        {
+            // Ексцентрична аномалія
+            double E = Utils.ConvertTrueToEccentricAnomaly(trueAnom, Eccentricity);
+            // Mean anomaly для еліптичної орбіти
+            M = E - Eccentricity * Math.Sin(E);
+        }
+        else if (Eccentricity > 1.0)
+        {
+            // Ексцентрична аномалія для гіперболи
+            double H = Utils.ConvertTrueToEccentricAnomaly(trueAnom, Eccentricity);
+            M = Eccentricity * Math.Sinh(H) - H;
+        }
+        else
+        {
+            // Двогіперболічний випадок (е=1)
+            double E = Utils.ConvertTrueToEccentricAnomaly(trueAnom, Eccentricity);
+            M = E - Eccentricity * Math.Sin(E);
+        }
+        return M;
+    }
+
 }

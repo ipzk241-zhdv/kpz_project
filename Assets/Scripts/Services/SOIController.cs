@@ -150,10 +150,24 @@ public class SOIController : MonoBehaviour
 
     public void InvertOrbits(CelestialBodyNode newSOI)
     {
+        foreach (var node in _previousChain)
+        {
+            if (node == newSOI)
+            {
+                var newMover = node.Transform.GetComponent<OrbitMover>();
+                if (newMover != null)
+                {
+                    newMover.enabled = false;
+                }
+                break;
+            }
+        }
+
         foreach (var oldNode in _previousChain)
         {
             var mover = oldNode.Transform.GetComponent<OrbitMover>();
-            if (mover == null) continue;
+            if (mover == null)
+                continue;
 
             if (_savedOrbitData.TryGetValue(oldNode.Name, out var od))
                 CopyOrbitData(od, mover.orbitData);
@@ -166,27 +180,38 @@ public class SOIController : MonoBehaviour
 
             var vh = mover.VelocityHandle;
             if (vh != null && _savedVelocities.TryGetValue(oldNode.Name, out var pos))
+            {
                 vh.localPosition = pos;
+                Debug.Log($"Restored velocity handle position for {oldNode.Name}: {pos}");
+            }
+
+            double beforeM = mover.orbitData.MeanAnomaly;
+
+            var relPos = mover.orbitData.positionRelativeToAttractor;
+            var sBasis = mover.orbitData.SemiMajorAxisBasis;
+            var oNorm = mover.orbitData.OrbitNormal;
+
+            double calcM = mover.orbitData.CalculateMeanAnomalyFromPosition();
+            mover.orbitData.SetMeanAnomaly(calcM);
 
             mover.enabled = true;
-            mover.ForceUpdateOrbitData();
         }
 
         var chain = new List<CelestialBodyNode>();
-        var node = newSOI;
-        while (node != null)
+        var nodeItr = newSOI;
+        while (nodeItr != null)
         {
-            chain.Add(node);
-            node = FindParent(node);
+            chain.Add(nodeItr);
+            nodeItr = FindParent(nodeItr);
         }
         chain.Reverse();
-
         _previousChain = chain;
 
         foreach (var n in chain)
         {
             var mover = n.Transform.GetComponent<OrbitMover>();
-            if (mover == null) continue;
+            if (mover == null)
+                continue;
 
             if (!_savedOrbitData.ContainsKey(n.Name))
                 _savedOrbitData[n.Name] = CloneOrbitData(mover.orbitData);
@@ -203,7 +228,8 @@ public class SOIController : MonoBehaviour
         {
             var current = chain[i];
             var mover = current.Transform.GetComponent<OrbitMover>();
-            if (mover == null) continue;
+            if (mover == null)
+                continue;
 
             mover.enabled = current != newSOI;
 
@@ -211,20 +237,31 @@ public class SOIController : MonoBehaviour
             mover.AttractorSettings.AttractorObject = newAttr;
 
             if (newAttr != null && _savedOrbitData.TryGetValue(newAttr.gameObject.name, out var saved))
+            {
                 CopyOrbitData(saved, mover.orbitData);
+                Vector3 worldPos = current.Transform.position;
+                Vector3 attrWorldPos = newAttr.position;
+                mover.orbitData.positionRelativeToAttractor = new Vector3d(
+                    worldPos.x - attrWorldPos.x,
+                    worldPos.y - attrWorldPos.y,
+                    worldPos.z - attrWorldPos.z
+                );
+            }
 
             if (newAttr != null && _savedOrbitData.TryGetValue(newAttr.gameObject.name, out saved))
                 mover.AttractorSettings.AttractorMass = saved.AttractorMass;
 
             var vh = mover.VelocityHandle;
             if (vh != null && newAttr != null && _savedVelocities.TryGetValue(newAttr.gameObject.name, out var vpos))
+            {
                 vh.localPosition = -vpos;
+            }
 
+            double newCalcM = mover.orbitData.CalculateMeanAnomalyFromPosition();
+            mover.orbitData.SetMeanAnomaly(newCalcM);
             mover.GetComponent<OrbitDisplay>().enabled = false;
-            mover.ForceUpdateOrbitData();
         }
     }
-
 
     private OrbitData CloneOrbitData(OrbitData original)
     {
