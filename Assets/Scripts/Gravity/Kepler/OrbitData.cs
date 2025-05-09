@@ -134,38 +134,52 @@ public class OrbitData
         OrbitNormalDotEclipticNormal = Vector3d.Dot(OrbitNormal, EclipticNormal);
 
         if (Eccentricity < 1.0)
-        {
-            OrbitCompressionRatio = 1 - Eccentricity * Eccentricity;
-            CenterPoint = -SemiMajorAxisBasis * SemiMajorAxis * Eccentricity;
-            Period = Utils.PI_2 * Math.Sqrt(Math.Pow(SemiMajorAxis, 3) / MG);
-            MeanMotion = Utils.PI_2 / Period;
-            Apoapsis = CenterPoint - SemiMajorAxisBasis * SemiMajorAxis;
-            Periapsis = CenterPoint + SemiMajorAxisBasis * SemiMajorAxis;
-            PeriapsisDistance = Periapsis.magnitude;
-            ApoapsisDistance = Apoapsis.magnitude;
-        }
+            CalculateEllipticElements();
         else if (Eccentricity > 1.0)
-        {
-            CenterPoint = SemiMajorAxisBasis * SemiMajorAxis * Eccentricity;
-            Period = double.PositiveInfinity;
-            MeanMotion = Math.Sqrt(MG / Math.Pow(SemiMajorAxis, 3));
-            Apoapsis = new Vector3d(double.PositiveInfinity, double.PositiveInfinity, double.PositiveInfinity);
-            Periapsis = CenterPoint - SemiMajorAxisBasis * SemiMajorAxis;
-            PeriapsisDistance = Periapsis.magnitude;
-            ApoapsisDistance = double.PositiveInfinity;
-        }
+            CalculateHyperbolicElements();
         else
-        {
-            CenterPoint = new Vector3d();
-            Period = double.PositiveInfinity;
-            MeanMotion = Math.Sqrt(MG * 0.5 / Math.Pow(PeriapsisDistance, 3));
-            Apoapsis = new Vector3d(double.PositiveInfinity, double.PositiveInfinity, double.PositiveInfinity);
-            PeriapsisDistance = SemiMajorAxis;
-            SemiMajorAxis = 0;
-            Periapsis = -PeriapsisDistance * SemiMajorAxisBasis;
-            ApoapsisDistance = double.PositiveInfinity;
-        }
+            CalculateParabolicElements();
 
+        FinalizeOrbitalElementCalculation();
+    }
+
+    private void CalculateEllipticElements()
+    {
+        OrbitCompressionRatio = 1 - Eccentricity * Eccentricity;
+        CenterPoint = -SemiMajorAxisBasis * SemiMajorAxis * Eccentricity;
+        Period = Utils.PI_2 * Math.Sqrt(Math.Pow(SemiMajorAxis, 3) / MG);
+        MeanMotion = Utils.PI_2 / Period;
+        Apoapsis = CenterPoint - SemiMajorAxisBasis * SemiMajorAxis;
+        Periapsis = CenterPoint + SemiMajorAxisBasis * SemiMajorAxis;
+        PeriapsisDistance = Periapsis.magnitude;
+        ApoapsisDistance = Apoapsis.magnitude;
+    }
+
+    private void CalculateHyperbolicElements()
+    {
+        CenterPoint = SemiMajorAxisBasis * SemiMajorAxis * Eccentricity;
+        Period = double.PositiveInfinity;
+        MeanMotion = Math.Sqrt(MG / Math.Pow(SemiMajorAxis, 3));
+        Apoapsis = new Vector3d(double.PositiveInfinity, double.PositiveInfinity, double.PositiveInfinity);
+        Periapsis = CenterPoint - SemiMajorAxisBasis * SemiMajorAxis;
+        PeriapsisDistance = Periapsis.magnitude;
+        ApoapsisDistance = double.PositiveInfinity;
+    }
+
+    private void CalculateParabolicElements()
+    {
+        CenterPoint = new Vector3d();
+        Period = double.PositiveInfinity;
+        MeanMotion = Math.Sqrt(MG * 0.5 / Math.Pow(PeriapsisDistance, 3));
+        Apoapsis = new Vector3d(double.PositiveInfinity, double.PositiveInfinity, double.PositiveInfinity);
+        PeriapsisDistance = SemiMajorAxis;
+        SemiMajorAxis = 0;
+        Periapsis = -PeriapsisDistance * SemiMajorAxisBasis;
+        ApoapsisDistance = double.PositiveInfinity;
+    }
+
+    private void FinalizeOrbitalElementCalculation()
+    {
         positionRelativeToAttractor = GetFocalPositionAtEccentricAnomaly(EccentricAnomaly);
         double comp = Eccentricity < 1
             ? (1 - Eccentricity * Eccentricity)
@@ -174,6 +188,121 @@ public class OrbitData
         velocityRelativeToAttractor = GetVelocityAtTrueAnomaly(TrueAnomaly);
         AttractorDistance = positionRelativeToAttractor.magnitude;
     }
+
+    /// <summary>Обчислює стан орбіти за векторами положення та швидкості.</summary>
+    public void CalculateOrbitStateFromOrbitalVectors()
+    {
+        MG = AttractorMass * GravConst;
+        AttractorDistance = positionRelativeToAttractor.magnitude;
+        var h = Vector3d.Cross(positionRelativeToAttractor, velocityRelativeToAttractor);
+        OrbitNormal = h.normalized;
+
+        Vector3d ecc;
+        if (OrbitNormal.sqrMagnitude < 0.99)
+        {
+            OrbitNormal = Vector3d.Cross(positionRelativeToAttractor, EclipticUp).normalized;
+            ecc = new Vector3d();
+        }
+        else
+        {
+            ecc = Vector3d.Cross(velocityRelativeToAttractor, h) / MG
+                  - positionRelativeToAttractor / AttractorDistance;
+        }
+
+        ComputeBasisVectorsAndFocalParameter(h, ecc);
+        ComputeAnomaliesAndExtremes(ecc, h);
+    }
+
+    private void ComputeBasisVectorsAndFocalParameter(Vector3d h, Vector3d ecc)
+    {
+        OrbitNormalDotEclipticNormal = Vector3d.Dot(OrbitNormal, EclipticNormal);
+        FocalParameter = h.sqrMagnitude / MG;
+        Eccentricity = ecc.magnitude;
+
+        SemiMinorAxisBasis = Vector3d.Cross(h, -ecc).normalized;
+        if (SemiMinorAxisBasis.sqrMagnitude < 0.99)
+            SemiMinorAxisBasis = Vector3d.Cross(OrbitNormal, positionRelativeToAttractor).normalized;
+
+        SemiMajorAxisBasis = Vector3d.Cross(OrbitNormal, SemiMinorAxisBasis).normalized;
+    }
+
+    private void ComputeAnomaliesAndExtremes(Vector3d ecc, Vector3d h)
+    {
+        if (Eccentricity < 1.0)
+            ComputeEllipticOrbit(ecc);
+        else if (Eccentricity > 1.0)
+            ComputeHyperbolicOrbit(ecc);
+        else
+            ComputeParabolicOrbit(ecc, h);
+    }
+
+    private void ComputeEllipticOrbit(Vector3d ecc)
+    {
+        OrbitCompressionRatio = 1 - Eccentricity * Eccentricity;
+        SemiMajorAxis = FocalParameter / OrbitCompressionRatio;
+        SemiMinorAxis = SemiMajorAxis * Math.Sqrt(OrbitCompressionRatio);
+        CenterPoint = -SemiMajorAxis * ecc;
+        var p = Math.Sqrt(Math.Pow(SemiMajorAxis, 3) / MG);
+        Period = Utils.PI_2 * p;
+        MeanMotion = 1d / p;
+
+        Apoapsis = CenterPoint - SemiMajorAxisBasis * SemiMajorAxis;
+        Periapsis = CenterPoint + SemiMajorAxisBasis * SemiMajorAxis;
+        PeriapsisDistance = Periapsis.magnitude;
+        ApoapsisDistance = Apoapsis.magnitude;
+
+        TrueAnomaly = Vector3d.Angle(positionRelativeToAttractor, SemiMajorAxisBasis) * Utils.Deg2Rad;
+        if (Vector3d.Dot(Vector3d.Cross(positionRelativeToAttractor, -SemiMajorAxisBasis), OrbitNormal) < 0)
+            TrueAnomaly = Utils.PI_2 - TrueAnomaly;
+
+        EccentricAnomaly = Utils.ConvertTrueToEccentricAnomaly(TrueAnomaly, Eccentricity);
+        MeanAnomaly = EccentricAnomaly - Eccentricity * Math.Sin(EccentricAnomaly);
+    }
+
+    private void ComputeHyperbolicOrbit(Vector3d ecc)
+    {
+        OrbitCompressionRatio = Eccentricity * Eccentricity - 1;
+        SemiMajorAxis = FocalParameter / OrbitCompressionRatio;
+        SemiMinorAxis = SemiMajorAxis * Math.Sqrt(OrbitCompressionRatio);
+        CenterPoint = SemiMajorAxis * ecc;
+        Period = double.PositiveInfinity;
+        MeanMotion = Math.Sqrt(MG / Math.Pow(SemiMajorAxis, 3));
+
+        Apoapsis = new Vector3d(double.PositiveInfinity, double.PositiveInfinity, double.PositiveInfinity);
+        Periapsis = CenterPoint - SemiMajorAxisBasis * SemiMajorAxis;
+        PeriapsisDistance = Periapsis.magnitude;
+        ApoapsisDistance = double.PositiveInfinity;
+
+        TrueAnomaly = Vector3d.Angle(positionRelativeToAttractor, ecc) * Utils.Deg2Rad;
+        if (Vector3d.Dot(Vector3d.Cross(positionRelativeToAttractor, -SemiMajorAxisBasis), OrbitNormal) < 0)
+            TrueAnomaly = -TrueAnomaly;
+
+        EccentricAnomaly = Utils.ConvertTrueToEccentricAnomaly(TrueAnomaly, Eccentricity);
+        MeanAnomaly = Math.Sinh(EccentricAnomaly) * Eccentricity - EccentricAnomaly;
+    }
+
+    private void ComputeParabolicOrbit(Vector3d ecc, Vector3d h)
+    {
+        OrbitCompressionRatio = 0;
+        SemiMajorAxis = 0;
+        SemiMinorAxis = 0;
+        PeriapsisDistance = h.sqrMagnitude / MG;
+        CenterPoint = new Vector3d();
+        Periapsis = -PeriapsisDistance * SemiMinorAxisBasis;
+        Period = double.PositiveInfinity;
+        MeanMotion = Math.Sqrt(MG / Math.Pow(PeriapsisDistance, 3));
+
+        Apoapsis = new Vector3d(double.PositiveInfinity, double.PositiveInfinity, double.PositiveInfinity);
+        ApoapsisDistance = double.PositiveInfinity;
+
+        TrueAnomaly = Vector3d.Angle(positionRelativeToAttractor, ecc) * Utils.Deg2Rad;
+        if (Vector3d.Dot(Vector3d.Cross(positionRelativeToAttractor, -SemiMajorAxisBasis), OrbitNormal) < 0)
+            TrueAnomaly = -TrueAnomaly;
+
+        EccentricAnomaly = Utils.ConvertTrueToEccentricAnomaly(TrueAnomaly, Eccentricity);
+        MeanAnomaly = Math.Sinh(EccentricAnomaly) * Eccentricity - EccentricAnomaly;
+    }
+
 
     /// <summary>Встановлює середню аномалію та оновлює стан орбіти.</summary>
     public void SetMeanAnomaly(double m)
@@ -198,89 +327,6 @@ public class OrbitData
         }
         SetPositionByCurrentAnomaly();
         SetVelocityByCurrentAnomaly();
-    }
-
-    /// <summary>Обчислює стан орбіти за векторами положення та швидкості.</summary>
-    public void CalculateOrbitStateFromOrbitalVectors()
-    {
-        MG = AttractorMass * GravConst;
-        AttractorDistance = positionRelativeToAttractor.magnitude;
-        var h = Vector3d.Cross(positionRelativeToAttractor, velocityRelativeToAttractor);
-        OrbitNormal = h.normalized;
-        Vector3d ecc;
-        if (OrbitNormal.sqrMagnitude < 0.99)
-        {
-            OrbitNormal = Vector3d.Cross(positionRelativeToAttractor, EclipticUp).normalized;
-            ecc = new Vector3d();
-        }
-        else
-        {
-            ecc = Vector3d.Cross(velocityRelativeToAttractor, h) / MG
-                  - positionRelativeToAttractor / AttractorDistance;
-        }
-        OrbitNormalDotEclipticNormal = Vector3d.Dot(OrbitNormal, EclipticNormal);
-        FocalParameter = h.sqrMagnitude / MG;
-        Eccentricity = ecc.magnitude;
-        SemiMinorAxisBasis = Vector3d.Cross(h, -ecc).normalized;
-        if (SemiMinorAxisBasis.sqrMagnitude < 0.99)
-            SemiMinorAxisBasis = Vector3d.Cross(OrbitNormal, positionRelativeToAttractor).normalized;
-        SemiMajorAxisBasis = Vector3d.Cross(OrbitNormal, SemiMinorAxisBasis).normalized;
-
-        if (Eccentricity < 1.0)
-        {
-            OrbitCompressionRatio = 1 - Eccentricity * Eccentricity;
-            SemiMajorAxis = FocalParameter / OrbitCompressionRatio;
-            SemiMinorAxis = SemiMajorAxis * Math.Sqrt(OrbitCompressionRatio);
-            CenterPoint = -SemiMajorAxis * ecc;
-            var p = Math.Sqrt(Math.Pow(SemiMajorAxis, 3) / MG);
-            Period = Utils.PI_2 * p;
-            MeanMotion = 1d / p;
-            Apoapsis = CenterPoint - SemiMajorAxisBasis * SemiMajorAxis;
-            Periapsis = CenterPoint + SemiMajorAxisBasis * SemiMajorAxis;
-            PeriapsisDistance = Periapsis.magnitude;
-            ApoapsisDistance = Apoapsis.magnitude;
-            TrueAnomaly = Vector3d.Angle(positionRelativeToAttractor, SemiMajorAxisBasis) * Utils.Deg2Rad;
-            if (Vector3d.Dot(Vector3d.Cross(positionRelativeToAttractor, -SemiMajorAxisBasis), OrbitNormal) < 0)
-                TrueAnomaly = Utils.PI_2 - TrueAnomaly;
-            EccentricAnomaly = Utils.ConvertTrueToEccentricAnomaly(TrueAnomaly, Eccentricity);
-            MeanAnomaly = EccentricAnomaly - Eccentricity * Math.Sin(EccentricAnomaly);
-        }
-        else if (Eccentricity > 1.0)
-        {
-            OrbitCompressionRatio = Eccentricity * Eccentricity - 1;
-            SemiMajorAxis = FocalParameter / OrbitCompressionRatio;
-            SemiMinorAxis = SemiMajorAxis * Math.Sqrt(OrbitCompressionRatio);
-            CenterPoint = SemiMajorAxis * ecc;
-            Period = double.PositiveInfinity;
-            MeanMotion = Math.Sqrt(MG / Math.Pow(SemiMajorAxis, 3));
-            Apoapsis = new Vector3d(double.PositiveInfinity, double.PositiveInfinity, double.PositiveInfinity);
-            Periapsis = CenterPoint - SemiMajorAxisBasis * SemiMajorAxis;
-            PeriapsisDistance = Periapsis.magnitude;
-            ApoapsisDistance = double.PositiveInfinity;
-            TrueAnomaly = Vector3d.Angle(positionRelativeToAttractor, ecc) * Utils.Deg2Rad;
-            if (Vector3d.Dot(Vector3d.Cross(positionRelativeToAttractor, -SemiMajorAxisBasis), OrbitNormal) < 0)
-                TrueAnomaly = -TrueAnomaly;
-            EccentricAnomaly = Utils.ConvertTrueToEccentricAnomaly(TrueAnomaly, Eccentricity);
-            MeanAnomaly = Math.Sinh(EccentricAnomaly) * Eccentricity - EccentricAnomaly;
-        }
-        else
-        {
-            OrbitCompressionRatio = 0;
-            SemiMajorAxis = 0;
-            SemiMinorAxis = 0;
-            PeriapsisDistance = h.sqrMagnitude / MG;
-            CenterPoint = new Vector3d();
-            Periapsis = -PeriapsisDistance * SemiMinorAxisBasis;
-            Period = double.PositiveInfinity;
-            MeanMotion = Math.Sqrt(MG / Math.Pow(PeriapsisDistance, 3));
-            Apoapsis = new Vector3d(double.PositiveInfinity, double.PositiveInfinity, double.PositiveInfinity);
-            ApoapsisDistance = double.PositiveInfinity;
-            TrueAnomaly = Vector3d.Angle(positionRelativeToAttractor, ecc) * Utils.Deg2Rad;
-            if (Vector3d.Dot(Vector3d.Cross(positionRelativeToAttractor, -SemiMajorAxisBasis), OrbitNormal) < 0)
-                TrueAnomaly = -TrueAnomaly;
-            EccentricAnomaly = Utils.ConvertTrueToEccentricAnomaly(TrueAnomaly, Eccentricity);
-            MeanAnomaly = Math.Sinh(EccentricAnomaly) * Eccentricity - EccentricAnomaly;
-        }
     }
 
     /// <summary>Повертає нахил орбіти в радіанах.</summary>
