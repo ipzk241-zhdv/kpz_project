@@ -30,9 +30,6 @@ public partial class OrbitData
     public Vector3d velocityRelativeToAttractor;
     public double AttractorMass;
     public double AttractorDistance;
-    public static readonly Vector3d EclipticRight = new Vector3d(1, 0, 0);
-    public static readonly Vector3d EclipticUp = new Vector3d(0, 1, 0);
-    public static readonly Vector3d EclipticNormal = new Vector3d(0, 0, 1);
 
     private readonly OrbitVectorsCalculator _vectorCalc = new OrbitVectorsCalculator();
     private readonly OrbitElementsCalculator _elementsCalc = new OrbitElementsCalculator();
@@ -40,12 +37,13 @@ public partial class OrbitData
     /// <summary>Ініціалізує порожній обʼєкт OrbitData.</summary>
     public OrbitData() { }
 
-
+    /// <summary>Обраховує орбіту за допомогою вектору швидкості, положення центру тяготіння та самого об'єкту.</summary>
     public void CalculateOrbitStateFromOrbitalVectors()
     {
         _vectorCalc.CalculateOrbitStateFromOrbitalVectors(this);
     }
 
+    /// <summary>Обраховує орбіту за допомогою базових орбітальних елементів.</summary>
     public void CalculateOrbitStateFromOrbitalElements()
     {
         _elementsCalc.CalculateOrbitStateFromOrbitalElements(this);
@@ -73,35 +71,14 @@ public partial class OrbitData
 
     /// <summary>Встановлює середню аномалію та оновлює стан орбіти.</summary>
     public void SetMeanAnomaly(double m)
-    {
-        if (!IsValidOrbit) return;
-        MeanAnomaly = m % Utils.PI_2;
-        if (Eccentricity < 1.0)
-        {
-            if (MeanAnomaly < 0) MeanAnomaly += Utils.PI_2;
-            EccentricAnomaly = Utils.SolveKeplersEquation(MeanAnomaly, Eccentricity);
-            TrueAnomaly = Utils.ConvertEccentricToTrueAnomaly(EccentricAnomaly, Eccentricity);
-        }
-        else if (Eccentricity > 1.0)
-        {
-            EccentricAnomaly = Utils.KeplerSolverHyperbolicCase(MeanAnomaly, Eccentricity);
-            TrueAnomaly = Utils.ConvertEccentricToTrueAnomaly(EccentricAnomaly, Eccentricity);
-        }
-        else
-        {
-            EccentricAnomaly = Utils.ConvertMeanToEccentricAnomaly(MeanAnomaly, Eccentricity);
-            TrueAnomaly = EccentricAnomaly;
-        }
-        SetPositionByCurrentAnomaly();
-        SetVelocityByCurrentAnomaly();
-    }
+    => OrbitAnomalyCalculator.SetMeanAnomaly(this, m);
 
     /// <summary>Повертає нахил орбіти в радіанах.</summary>
     public double Inclination
     {
         get
         {
-            var dot = Vector3d.Dot(OrbitNormal, EclipticNormal);
+            var dot = Vector3d.Dot(OrbitNormal, EclipticConstants.EclipticNormal);
             return Math.Acos(dot);
         }
     }
@@ -111,10 +88,10 @@ public partial class OrbitData
     {
         get
         {
-            var ascNodeDir = Vector3d.Cross(EclipticNormal, OrbitNormal).normalized;
-            var dot = Vector3d.Dot(ascNodeDir, EclipticRight);
+            var ascNodeDir = Vector3d.Cross(EclipticConstants.EclipticNormal, OrbitNormal).normalized;
+            var dot = Vector3d.Dot(ascNodeDir, EclipticConstants.EclipticRight);
             var angle = Math.Acos(dot);
-            if (Vector3d.Dot(Vector3d.Cross(ascNodeDir, EclipticRight), EclipticNormal) >= 0)
+            if (Vector3d.Dot(Vector3d.Cross(ascNodeDir, EclipticConstants.EclipticRight), EclipticConstants.EclipticNormal) >= 0)
                 angle = Utils.PI_2 - angle;
             return angle;
         }
@@ -125,7 +102,7 @@ public partial class OrbitData
     {
         get
         {
-            var ascNodeDir = Vector3d.Cross(EclipticNormal, OrbitNormal).normalized;
+            var ascNodeDir = Vector3d.Cross(EclipticConstants.EclipticNormal, OrbitNormal).normalized;
             var dot = Vector3d.Dot(ascNodeDir, SemiMajorAxisBasis.normalized);
             var angle = Math.Acos(dot);
             if (Vector3d.Dot(Vector3d.Cross(ascNodeDir, SemiMajorAxisBasis), OrbitNormal) < 0)
@@ -145,206 +122,19 @@ public partial class OrbitData
         }
     }
 
-    /// <summary>Повертає положення фокальної точки за ексцентричною аномалією.</summary>
-    public Vector3d GetFocalPositionAtEccentricAnomaly(double eccentricAnomaly)
-    {
-        return GetCentralPositionAtEccentricAnomaly(eccentricAnomaly) + CenterPoint;
-    }
-
-    /// <summary>Повертає центральне положення за ексцентричною аномалією.</summary>
-    public Vector3d GetCentralPositionAtEccentricAnomaly(double eccentricAnomaly)
-    {
-        if (Eccentricity < 1.0)
-        {
-            var r = new Vector3d(
-                Math.Sin(eccentricAnomaly) * SemiMinorAxis,
-               -Math.Cos(eccentricAnomaly) * SemiMajorAxis
-            );
-            return -SemiMinorAxisBasis * r.x - SemiMajorAxisBasis * r.y;
-        }
-        else if (Eccentricity > 1.0)
-        {
-            var r = new Vector3d(
-                Math.Sinh(eccentricAnomaly) * SemiMinorAxis,
-                Math.Cosh(eccentricAnomaly) * SemiMajorAxis
-            );
-            return -SemiMinorAxisBasis * r.x - SemiMajorAxisBasis * r.y;
-        }
-        else
-        {
-            var r = new Vector3d(
-                PeriapsisDistance * Math.Sin(eccentricAnomaly) / (1.0 + Math.Cos(eccentricAnomaly)),
-                PeriapsisDistance * Math.Cos(eccentricAnomaly) / (1.0 + Math.Cos(eccentricAnomaly))
-            );
-            return -SemiMinorAxisBasis * r.x + SemiMajorAxisBasis * r.y;
-        }
-    }
-
-    /// <summary>Оновлює аномалії орбіти за проміжок часу.</summary>
-    public void UpdateOrbitAnomaliesByTime(double deltaTime)
-    {
-        if (Eccentricity < 1.0)
-        {
-            MeanAnomaly += MeanMotion * deltaTime;
-            MeanAnomaly %= Utils.PI_2;
-            if (MeanAnomaly < 0) MeanAnomaly += Utils.PI_2;
-            EccentricAnomaly = Utils.SolveKeplersEquation(MeanAnomaly, Eccentricity);
-            var cosE = Math.Cos(EccentricAnomaly);
-            TrueAnomaly = Math.Acos((cosE - Eccentricity) / (1 - Eccentricity * cosE));
-            if (MeanAnomaly > Math.PI) TrueAnomaly = Utils.PI_2 - TrueAnomaly;
-        }
-        else if (Eccentricity > 1.0)
-        {
-            MeanAnomaly += MeanMotion * deltaTime;
-            EccentricAnomaly = Utils.SolveKeplersEquation(MeanAnomaly, Eccentricity);
-            TrueAnomaly = Math.Atan2(
-                Math.Sqrt(Eccentricity * Eccentricity - 1.0) * Math.Sinh(EccentricAnomaly),
-                Eccentricity - Math.Cosh(EccentricAnomaly)
-            );
-        }
-        else
-        {
-            MeanAnomaly += MeanMotion * deltaTime;
-            EccentricAnomaly = Utils.ConvertMeanToEccentricAnomaly(MeanAnomaly, Eccentricity);
-            TrueAnomaly = EccentricAnomaly;
-        }
-    }
-
-    /// <summary>Повертає швидкість за заданою істинною аномалією.</summary>
-    public Vector3d GetVelocityAtTrueAnomaly(double trueAnomaly)
-    {
-        if (FocalParameter <= 0) return new Vector3d();
-        var sqrtMGp = Math.Sqrt(AttractorMass * GravConst / FocalParameter);
-        var vX = sqrtMGp * (Eccentricity + Math.Cos(trueAnomaly));
-        var vY = sqrtMGp * Math.Sin(trueAnomaly);
-        return -SemiMinorAxisBasis * vX - SemiMajorAxisBasis * vY;
-    }
-
     /// <summary>Повертає швидкість за ексцентричною аномалією.</summary>
     public Vector3d GetVelocityAtEccentricAnomaly(double eccentricAnomaly)
-    {
-        return GetVelocityAtTrueAnomaly(Utils.ConvertEccentricToTrueAnomaly(eccentricAnomaly, Eccentricity));
-    }
-
-    /// <summary>Встановлює позицію за поточною ексцентричною аномалією.</summary>
-    public void SetPositionByCurrentAnomaly()
-    {
-        positionRelativeToAttractor = GetFocalPositionAtEccentricAnomaly(EccentricAnomaly);
-    }
-
-    /// <summary>Встановлює швидкість за поточною ексцентричною аномалією.</summary>
-    public void SetVelocityByCurrentAnomaly()
-    {
-        velocityRelativeToAttractor = GetVelocityAtEccentricAnomaly(EccentricAnomaly);
-    }
+    => OrbitAnomalyCalculator.GetVelocityAtTrueAnomaly(this, eccentricAnomaly);
 
     /// <summary>Оновлює весь стан орбіти за проміжок часу.</summary>
     public void UpdateOrbitDataByTime(double deltaTime)
-    {
-        UpdateOrbitAnomaliesByTime(deltaTime);
-        SetPositionByCurrentAnomaly();
-        SetVelocityByCurrentAnomaly();
-    }
+    => OrbitAnomalyCalculator.UpdateOrbitAnomaliesByTime(this, deltaTime);
 
-    /// <summary>
-    /// Повертає центральну позицію при істинної аномалії.
-    /// </summary>
-    public Vector3d GetCentralPositionAtTrueAnomaly(double trueAnomaly)
-    {
-        double ecc = Utils.ConvertTrueToEccentricAnomaly(trueAnomaly, Eccentricity);
-        return GetCentralPositionAtEccentricAnomaly(ecc);
-    }
-
-    /// <summary>
-    /// Повертає фокальну позицію при істинній аномалії
-    /// </summary>
-    public Vector3d GetFocalPositionAtTrueAnomaly(double trueAnomaly)
-    {
-        return GetCentralPositionAtTrueAnomaly(trueAnomaly) + CenterPoint;
-    }
-
+    /// <summary>Повертає список точок орбіти без створення нового масиву.</summary>
     public void GetOrbitPoints(ref Vector3d[] orbitPoints, int orbitPointsCount, Vector3d gravitySourceOrigin, double maxDistance = 500d)
-    {
-        if (orbitPointsCount < 2)
-        {
-            orbitPoints = new Vector3d[0];
-            return;
-        }
+    => OrbitPositionCalculator.GetOrbitPoints(this, ref orbitPoints, orbitPointsCount, gravitySourceOrigin, maxDistance);
 
-        if (Eccentricity < 1)
-        {
-            GenerateEllipticOrbitPoints(ref orbitPoints, orbitPointsCount, gravitySourceOrigin);
-        }
-        else
-        {
-            GenerateHyperbolicOrbitPoints(ref orbitPoints, orbitPointsCount, gravitySourceOrigin, maxDistance);
-        }
-    }
-
-    private void GenerateEllipticOrbitPoints(ref Vector3d[] orbitPoints, int orbitPointsCount, Vector3d origin)
-    {
-        if (orbitPoints == null || orbitPoints.Length != orbitPointsCount)
-        {
-            orbitPoints = new Vector3d[orbitPointsCount];
-        }
-
-        for (int i = 0; i < orbitPointsCount; i++)
-        {
-            double eccentricAnomaly = i * Utils.PI_2 / (orbitPointsCount - 1);
-            orbitPoints[i] = GetFocalPositionAtEccentricAnomaly(eccentricAnomaly) + origin;
-        }
-    }
-
-    private void GenerateHyperbolicOrbitPoints(ref Vector3d[] orbitPoints, int orbitPointsCount, Vector3d origin, double maxDistance)
-    {
-        if (maxDistance < PeriapsisDistance)
-        {
-            orbitPoints = new Vector3d[0];
-            return;
-        }
-
-        double maxAngle = Utils.CalcTrueAnomalyForDistance(maxDistance, Eccentricity, SemiMajorAxis, PeriapsisDistance);
-        orbitPoints = new Vector3d[orbitPointsCount];
-
-        for (int i = 0; i < orbitPointsCount; i++)
-        {
-            double trueAnomaly = -maxAngle + i * 2d * maxAngle / (orbitPointsCount - 1);
-            orbitPoints[i] = GetFocalPositionAtTrueAnomaly(trueAnomaly) + origin;
-        }
-    }
-
+    /// <summary>Повертає середню аномалію відносно поточної позиції.</summary
     public double CalculateMeanAnomalyFromPosition()
-    {
-        // Відстань до центрального тіла
-        double r = positionRelativeToAttractor.magnitude;
-        // Визначаємо істинну аномалію
-        double cosTrue = Vector3d.Dot(positionRelativeToAttractor, SemiMajorAxisBasis) / r;
-        cosTrue = Math.Clamp(cosTrue, -1.0, 1.0);
-        double trueAnom = Math.Acos(cosTrue);
-        // Враховуємо напрямок обертання
-        if (Vector3d.Dot(Vector3d.Cross(SemiMajorAxisBasis, positionRelativeToAttractor), OrbitNormal) < 0)
-            trueAnom = Utils.PI_2 - trueAnom;
-
-        double M;
-        if (Eccentricity < 1.0)
-        {
-            // Ексцентрична аномалія
-            double E = Utils.ConvertTrueToEccentricAnomaly(trueAnom, Eccentricity);
-            // Mean anomaly для еліптичної орбіти
-            M = E - Eccentricity * Math.Sin(E);
-        }
-        else if (Eccentricity > 1.0)
-        {
-            // Ексцентрична аномалія для гіперболи
-            double H = Utils.ConvertTrueToEccentricAnomaly(trueAnom, Eccentricity);
-            M = Eccentricity * Math.Sinh(H) - H;
-        }
-        else
-        {
-            // Двогіперболічний випадок (е=1)
-            double E = Utils.ConvertTrueToEccentricAnomaly(trueAnom, Eccentricity);
-            M = E - Eccentricity * Math.Sin(E);
-        }
-        return M;
-    }
+    => OrbitAnomalyCalculator.CalculateMeanAnomalyFromPosition(this);
 }

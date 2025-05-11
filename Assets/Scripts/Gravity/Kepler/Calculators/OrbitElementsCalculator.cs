@@ -56,13 +56,19 @@ public class OrbitElementsCalculator : IOrbitElementsCalculator
 
     private void FinalizeOrbitalElementCalculation(OrbitData d)
     {
-        d.positionRelativeToAttractor = d.GetFocalPositionAtEccentricAnomaly(d.EccentricAnomaly);
+        d.positionRelativeToAttractor = GetFocalPositionAtEccentricAnomaly(d, d.EccentricAnomaly);
         double comp = d.Eccentricity < 1
             ? (1 - d.Eccentricity * d.Eccentricity)
             : (d.Eccentricity * d.Eccentricity - 1);
         d.FocalParameter = d.SemiMajorAxis * comp;
-        d.velocityRelativeToAttractor = d.GetVelocityAtTrueAnomaly(d.TrueAnomaly);
+        d.velocityRelativeToAttractor = OrbitAnomalyCalculator.GetVelocityAtTrueAnomaly(d, d.TrueAnomaly);
         d.AttractorDistance = d.positionRelativeToAttractor.magnitude;
+    }
+
+    /// <summary>Повертає положення фокальної точки за ексцентричною аномалією.</summary>
+    public Vector3d GetFocalPositionAtEccentricAnomaly(OrbitData d, double eccentricAnomaly)
+    {
+        return OrbitPositionCalculator.GetCentralPositionAtEccentricAnomaly(d, eccentricAnomaly) + d.CenterPoint;
     }
 }
 
