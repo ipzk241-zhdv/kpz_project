@@ -7,7 +7,7 @@ public class OrbitElementsCalculator : IOrbitElementsCalculator
     {
         d.MG = d.AttractorMass * d.GravConst;
         d.OrbitNormal = -Vector3d.Cross(d.SemiMajorAxisBasis, d.SemiMinorAxisBasis).normalized;
-        d.OrbitNormalDotEclipticNormal = Vector3d.Dot(d.OrbitNormal, OrbitData.EclipticNormal);
+        d.OrbitNormalDotEclipticNormal = Vector3d.Dot(d.OrbitNormal, EclipticConstants.EclipticNormal);
 
         if (d.Eccentricity < 1.0)
             CalculateEllipticElements(d);

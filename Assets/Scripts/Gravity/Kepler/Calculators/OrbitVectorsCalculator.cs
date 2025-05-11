@@ -13,7 +13,7 @@ public class OrbitVectorsCalculator : IOrbitVectorsCalculator
         Vector3d ecc;
         if (d.OrbitNormal.sqrMagnitude < 0.99)
         {
-            d.OrbitNormal = Vector3d.Cross(d.positionRelativeToAttractor, OrbitData.EclipticUp).normalized;
+            d.OrbitNormal = Vector3d.Cross(d.positionRelativeToAttractor, EclipticConstants.EclipticUp).normalized;
             ecc = new Vector3d();
         }
         else
@@ -28,7 +28,7 @@ public class OrbitVectorsCalculator : IOrbitVectorsCalculator
 
     private void ComputeBasisVectorsAndFocalParameter(OrbitData d, Vector3d h, Vector3d ecc)
     {
-        d.OrbitNormalDotEclipticNormal = Vector3d.Dot(d.OrbitNormal, OrbitData.EclipticNormal);
+        d.OrbitNormalDotEclipticNormal = Vector3d.Dot(d.OrbitNormal, EclipticConstants.EclipticNormal);
         d.FocalParameter = h.sqrMagnitude / d.MG;
         d.Eccentricity = ecc.magnitude;
 
