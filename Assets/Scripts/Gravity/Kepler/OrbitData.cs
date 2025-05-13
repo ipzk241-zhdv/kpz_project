@@ -1,6 +1,4 @@
 ﻿using System;
-using UnityEngine;
-using static UnityEngine.UI.Image;
 
 [Serializable]
 public partial class OrbitData

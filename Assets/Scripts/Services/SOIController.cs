@@ -185,12 +185,6 @@ public class SOIController : MonoBehaviour
                 Debug.Log($"Restored velocity handle position for {oldNode.Name}: {pos}");
             }
 
-            double beforeM = mover.orbitData.MeanAnomaly;
-
-            var relPos = mover.orbitData.positionRelativeToAttractor;
-            var sBasis = mover.orbitData.SemiMajorAxisBasis;
-            var oNorm = mover.orbitData.OrbitNormal;
-
             double calcM = mover.orbitData.CalculateMeanAnomalyFromPosition();
             mover.orbitData.SetMeanAnomaly(calcM);
 
