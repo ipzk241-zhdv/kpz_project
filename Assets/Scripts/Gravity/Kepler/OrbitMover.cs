@@ -6,7 +6,7 @@ using UnityEngine;
 [SelectionBase]
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Transform))]
-public class OrbitMover : MonoBehaviour, IScalableAndGravityReceiver
+public class OrbitMover : MonoBehaviour, ITimeScalable, IEpochReceiver
 {
     /// <summary>
     /// Налаштування гравітаційного джерела. Об'єкт притягання повинен бути призначений.
@@ -80,6 +80,21 @@ public class OrbitMover : MonoBehaviour, IScalableAndGravityReceiver
             TimeWarpManager.Instance.Register(AttractorSettings);
             OnTimeScaleChanged(TimeWarpManager.Instance.CurrentTimeScale);
             AttractorSettings.OnGravityConstantChanged(TimeWarpManager.Instance.CurrentG);
+        }
+        if (EpochController.Instance != null)
+        {
+            EpochController.Instance.Register(this);
+            UpdateEpoch(EpochController.Instance.CurrentEpoch);
+        }
+    }
+
+    public void UpdateEpoch(double epoch)
+    {
+        if (orbitData != null && orbitData.IsValidOrbit)
+        {
+            orbitData.UpdateOrbitDataByTime(epoch);
+            ForceUpdateVelocityHandleFromInternalState();
+            ForceUpdateViewFromInternalState();
         }
     }
 

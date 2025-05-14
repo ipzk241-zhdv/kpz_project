@@ -158,8 +158,6 @@ public class SOIController : MonoBehaviour
             if (next != null && _savedOrbitData.TryGetValue(chain[i + 1].Name, out var srcData))
             {
                 CopyOrbitData(srcData, mover.orbitData);
-
-                // Update relative position to attractor as in original implementation
                 Vector3 worldPos = node.Transform.position;
                 Vector3 attrWorldPos = next.position;
                 mover.orbitData.positionRelativeToAttractor = new Vector3d(

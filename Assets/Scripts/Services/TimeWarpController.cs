@@ -12,7 +12,7 @@ public class TimeWarpManager : MonoBehaviour
     [SerializeField] private double gravityConstant = 6.6743e-11;
     [SerializeField] private float timeScale = 1f;
 
-    private readonly List<IScalableAndGravityReceiver> timeScaleListeners = new();
+    private readonly List<ITimeScalable> timeScaleListeners = new();
     private readonly List<IGravityConstantReceiver> gravityReceivers = new();
 
     public float CurrentTimeScale => timeScale;
@@ -96,6 +96,6 @@ public class TimeWarpManager : MonoBehaviour
             receiver.OnGravityConstantChanged(g);
     }
 
-    public void Register(IScalableAndGravityReceiver listener) => timeScaleListeners.Add(listener);
+    public void Register(ITimeScalable listener) => timeScaleListeners.Add(listener);
     public void Register(IGravityConstantReceiver receiver) => gravityReceivers.Add(receiver);
 }
