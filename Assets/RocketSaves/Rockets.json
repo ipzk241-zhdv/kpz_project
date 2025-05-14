@@ -1,0 +1,268 @@
+{
+    "bodies": [
+        {
+            "name": "satel",
+            "orbitData": {
+                "MG": 100.00000149011612,
+                "GravConst": 0.10000000149011612,
+                "SemiMinorAxis": 4.861919079042465,
+                "SemiMajorAxis": 5.733932481938161,
+                "FocalParameter": 4.122521010775318,
+                "Eccentricity": 0.5301233553191924,
+                "Period": 8.626978729317806,
+                "TrueAnomaly": 4.815824474290554,
+                "MeanAnomaly": 5.780419545292413,
+                "EccentricAnomaly": 5.356521912138526,
+                "MeanMotion": 0.7283181637885475,
+                "Periapsis": {
+                    "x": 1.619514806839774,
+                    "y": 2.0044304179829579,
+                    "z": 0.7863617588987911
+                },
+                "PeriapsisDistance": 2.694240955439399,
+                "Apoapsis": {
+                    "x": -5.273846781455077,
+                    "y": -6.527299944331983,
+                    "z": -2.560736964992774
+                },
+                "ApoapsisDistance": 8.773624008436924,
+                "CenterPoint": {
+                    "x": -1.827165987307652,
+                    "y": -2.261434763174513,
+                    "z": -0.8871876030469915
+                },
+                "OrbitCompressionRatio": 0.7189692281451212,
+                "OrbitNormal": {
+                    "x": 0.6142818493426673,
+                    "y": -0.6637368758406599,
+                    "z": 0.4267448525962946
+                },
+                "SemiMinorAxisBasis": {
+                    "x": 0.5112080482679366,
+                    "y": -0.07722837543300569,
+                    "z": -0.8559802038680952
+                },
+                "SemiMajorAxisBasis": {
+                    "x": 0.6011024379872699,
+                    "y": 0.743968505836947,
+                    "z": 0.291867643579245
+                },
+                "OrbitNormalDotEclipticNormal": 0.4267448525962946,
+                "positionRelativeToAttractor": {
+                    "x": 2.230003356933594,
+                    "y": 0.0,
+                    "z": -3.2099990844726564
+                },
+                "velocityRelativeToAttractor": {
+                    "x": 1.3499984741210938,
+                    "y": 3.885475873947144,
+                    "z": 4.100000381469727
+                },
+                "AttractorMass": 1000.0,
+                "AttractorDistance": 3.908581468288769
+            },
+            "attractorSettings": {
+                "attractorName": "Sphere",
+                "attractorMass": 1000.0
+            }
+        },
+        {
+            "name": "satel (1)",
+            "orbitData": {
+                "MG": 100.00000149011612,
+                "GravConst": 0.10000000149011612,
+                "SemiMinorAxis": 3.6000027849080999,
+                "SemiMajorAxis": 3.628739938552202,
+                "FocalParameter": 3.5714932099865148,
+                "Eccentricity": 0.12560224858095909,
+                "Period": 4.34323803717237,
+                "TrueAnomaly": 0.7199330783574682,
+                "MeanAnomaly": 0.5655256352464977,
+                "EccentricAnomaly": 0.6405946169642878,
+                "MeanMotion": 1.446659209880704,
+                "Periapsis": {
+                    "x": -2.810712457417217,
+                    "y": -1.4036218486536818,
+                    "z": -0.4443301840552704
+                },
+                "PeriapsisDistance": 3.172962042754514,
+                "Apoapsis": {
+                    "x": 3.618198076389105,
+                    "y": 1.8068663905390077,
+                    "z": 0.5719811761562049
+                },
+                "ApoapsisDistance": 4.08451783434989,
+                "CenterPoint": {
+                    "x": 0.403742809485944,
+                    "y": 0.20162227094266284,
+                    "z": 0.06382549605046725
+                },
+                "OrbitCompressionRatio": 0.984224075151407,
+                "OrbitNormal": {
+                    "x": -0.2734455845801592,
+                    "y": 0.74151743837208,
+                    "z": -0.6126821368896955
+                },
+                "SemiMinorAxisBasis": {
+                    "x": 0.3748713654505848,
+                    "y": -0.5044413283550576,
+                    "z": -0.7778241482575602
+                },
+                "SemiMajorAxisBasis": {
+                    "x": -0.8858323609119443,
+                    "y": -0.4423695681638753,
+                    "z": -0.1400364007095207
+                },
+                "OrbitNormalDotEclipticNormal": -0.6126821368896955,
+                "positionRelativeToAttractor": {
+                    "x": -2.9799976348876959,
+                    "y": 0.0,
+                    "z": 1.329999923706055
+                },
+                "velocityRelativeToAttractor": {
+                    "x": 1.3499984741210938,
+                    "y": 3.885475873947144,
+                    "z": 4.100000381469727
+                },
+                "AttractorMass": 1000.0,
+                "AttractorDistance": 3.263324332792309
+            },
+            "attractorSettings": {
+                "attractorName": "Sphere",
+                "attractorMass": 1000.0
+            }
+        },
+        {
+            "name": "satel (2)",
+            "orbitData": {
+                "MG": 100.00000149011612,
+                "GravConst": 0.10000000149011612,
+                "SemiMinorAxis": 2.508193902494845,
+                "SemiMajorAxis": 3.767004335241314,
+                "FocalParameter": 1.6700370088927217,
+                "Eccentricity": 0.7461012572209378,
+                "Period": 4.593820750360131,
+                "TrueAnomaly": 3.983944851628325,
+                "MeanAnomaly": 5.609323698494636,
+                "EccentricAnomaly": 4.872801249164876,
+                "MeanMotion": 1.3677471648598896,
+                "Periapsis": {
+                    "x": 0.2087123771654461,
+                    "y": 0.7120117472106586,
+                    "z": 0.6035324531668014
+                },
+                "PeriapsisDistance": 0.9564376647610464,
+                "Apoapsis": {
+                    "x": -1.4353475727261814,
+                    "y": -4.896615845169645,
+                    "z": -4.150586819428288
+                },
+                "ApoapsisDistance": 6.57757100572158,
+                "CenterPoint": {
+                    "x": -0.6133175977803677,
+                    "y": -2.0923020489794936,
+                    "z": -1.773527183130743
+                },
+                "OrbitCompressionRatio": 0.4433329139733361,
+                "OrbitNormal": {
+                    "x": 0.965130575191772,
+                    "y": -0.06883026547829031,
+                    "z": -0.2525576516049106
+                },
+                "SemiMinorAxisBasis": {
+                    "x": -0.1445810018878195,
+                    "y": 0.6641306118661229,
+                    "z": -0.7335031453752897
+                },
+                "SemiMajorAxisBasis": {
+                    "x": 0.2182184839171826,
+                    "y": 0.7444413509045001,
+                    "z": 0.6310212106897589
+                },
+                "OrbitNormalDotEclipticNormal": -0.2525576516049106,
+                "positionRelativeToAttractor": {
+                    "x": -0.8400001525878906,
+                    "y": 0.0,
+                    "z": -3.2099990844726564
+                },
+                "velocityRelativeToAttractor": {
+                    "x": 1.3499984741210938,
+                    "y": 3.885475873947144,
+                    "z": 4.100000381469727
+                },
+                "AttractorMass": 1000.0,
+                "AttractorDistance": 3.318085951066213
+            },
+            "attractorSettings": {
+                "attractorName": "Sphere",
+                "attractorMass": 1000.0
+            }
+        },
+        {
+            "name": "satel (3)",
+            "orbitData": {
+                "MG": 100.00000149011612,
+                "GravConst": 0.10000000149011612,
+                "SemiMinorAxis": 6.789072068989968,
+                "SemiMajorAxis": 9.224238524339878,
+                "FocalParameter": 4.996780973987034,
+                "Eccentricity": 0.6769777036548678,
+                "Period": 17.60255265183951,
+                "TrueAnomaly": 1.402278999902357,
+                "MeanAnomaly": 0.2685690115238729,
+                "EccentricAnomaly": 0.7096833554243806,
+                "MeanMotion": 0.35694739458842036,
+                "Periapsis": {
+                    "x": -2.2970799141683457,
+                    "y": -0.7397229421892648,
+                    "z": -1.74770044422898
+                },
+                "PeriapsisDistance": 2.9796347101675018,
+                "Apoapsis": {
+                    "x": 11.925343368427829,
+                    "y": 3.840288719909195,
+                    "z": 9.073227175960153
+                },
+                "ApoapsisDistance": 15.468842338512254,
+                "CenterPoint": {
+                    "x": 4.814131727129742,
+                    "y": 1.550282888859965,
+                    "z": 3.662763365865587
+                },
+                "OrbitCompressionRatio": 0.541701188754182,
+                "OrbitNormal": {
+                    "x": 0.33374300801883757,
+                    "y": 0.6269041237560509,
+                    "z": -0.7039934830779302
+                },
+                "SemiMinorAxisBasis": {
+                    "x": 0.5424828555816624,
+                    "y": -0.7384838435221706,
+                    "z": -0.4004422108827784
+                },
+                "SemiMajorAxisBasis": {
+                    "x": -0.770926686526354,
+                    "y": -0.24825960701326417,
+                    "z": -0.5865485585415041
+                },
+                "OrbitNormalDotEclipticNormal": -0.7039934830779302,
+                "positionRelativeToAttractor": {
+                    "x": -2.9799976348876959,
+                    "y": 3.0799999237060549,
+                    "z": 1.329999923706055
+                },
+                "velocityRelativeToAttractor": {
+                    "x": 1.3499984741210938,
+                    "y": 3.885476112365723,
+                    "z": 4.100000381469727
+                },
+                "AttractorMass": 1000.0,
+                "AttractorDistance": 4.487280382483768
+            },
+            "attractorSettings": {
+                "attractorName": "Sphere",
+                "attractorMass": 1000.0
+            }
+        }
+    ]
+}
