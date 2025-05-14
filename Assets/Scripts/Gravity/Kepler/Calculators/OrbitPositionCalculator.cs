@@ -100,4 +100,11 @@ public static class OrbitPositionCalculator
             orbitPoints[i] = GetFocalPositionAtTrueAnomaly(d, trueAnomaly) + origin;
         }
     }
+
+    public static void ComputeSphereOfInfluence(OrbitData d)
+    {
+        if (d.AttractorMass > 0 && d.BodyMass > 0)
+        d.SphereOfInfluenceRadius = d.SemiMajorAxis * Math.Pow(d.BodyMass / d.AttractorMass, 2.0 / 5.0);
+    }
+    
 }

@@ -28,6 +28,9 @@ public partial class OrbitData
     public Vector3d velocityRelativeToAttractor;
     public double AttractorMass;
     public double AttractorDistance;
+    public double SphereOfInfluenceRadius;
+    public double BodyMass = 1;
+
 
     private readonly OrbitVectorsCalculator _vectorCalc = new OrbitVectorsCalculator();
     private readonly OrbitElementsCalculator _elementsCalc = new OrbitElementsCalculator();

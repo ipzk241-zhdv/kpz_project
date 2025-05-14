@@ -24,6 +24,7 @@ public class OrbitVectorsCalculator : IOrbitVectorsCalculator
 
         ComputeBasisVectorsAndFocalParameter(d, h, ecc);
         ComputeAnomaliesAndExtremes(d, ecc, h);
+        OrbitPositionCalculator.ComputeSphereOfInfluence(d);
     }
 
     private void ComputeBasisVectorsAndFocalParameter(OrbitData d, Vector3d h, Vector3d ecc)

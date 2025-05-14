@@ -21,6 +21,7 @@ public class OrbitDisplay : MonoBehaviour
     public Color OrbitColor = Color.green;
     public bool ShowOrbitGizmo = true;
     public bool ShowVelocityGizmo = true;
+    public bool ShowSOI = true;
 #endif
 
     private void OnEnable()
@@ -32,35 +33,36 @@ public class OrbitDisplay : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (ShowGizmo)
-        {
-            if (ShowOrbitGizmo && _moverReference != null)
-            {
-                if (_moverReference.AttractorSettings != null && _moverReference.AttractorSettings.AttractorObject != null)
-                {
-                    if (ShowVelocityGizmo)
-                    {
-                        ShowVelocity();
-                    }
+        if (!ShowGizmo || _moverReference == null)
+            return;
 
-                    if (ShowOrbitGizmo)
-                    {
-                        ShowOrbit();
-                    }
-                }
-            }
+        if (_moverReference.AttractorSettings == null || _moverReference.AttractorSettings.AttractorObject == null)
+            return;
+
+        if (ShowVelocityGizmo)
+        {
+            ShowVelocity();
         }
 
+        if (ShowOrbitGizmo)
+        {
+            ShowOrbit();
+        }
+
+        if (ShowSOI)
+        {
+            ShowSphereOfInfluence();
+        }
     }
 
     /// <summary>
-    /// Візуалізує потчону швидкість об'єкта на гізмо.
+    /// Візуалізує поточну швидкість об'єкта на гізмо.
     /// </summary>
-    private void ShowVelocity() 
+    private void ShowVelocity()
     {
         Gizmos.color = new Color(0f, 0.5f, 1f);
         Vector3d velocity = _moverReference.orbitData.GetVelocityAtEccentricAnomaly(_moverReference.orbitData.EccentricAnomaly);
-        
+
         if (_moverReference.VelocityHandleLengthScale > 0)
         {
             velocity *= _moverReference.VelocityHandleLengthScale;
@@ -70,7 +72,7 @@ public class OrbitDisplay : MonoBehaviour
         Gizmos.DrawLine(currentPosition, currentPosition + velocity.ToVector3());
     }
 
-    private void ShowOrbit() 
+    private void ShowOrbit()
     {
         Vector3d posGravitySource = new Vector3d(_moverReference.AttractorSettings.AttractorObject.transform.position);
         _moverReference.orbitData.GetOrbitPoints(ref _orbitPoints, OrbitPointsCount, posGravitySource, maxDistance);
@@ -80,5 +82,16 @@ public class OrbitDisplay : MonoBehaviour
             Gizmos.DrawLine(_orbitPoints[i].ToVector3(), _orbitPoints[i + 1].ToVector3());
         }
     }
+
+    private void ShowSphereOfInfluence()
+    {
+        double soiRadius = _moverReference.orbitData.SphereOfInfluenceRadius;
+        if (soiRadius <= 0) return;
+
+        Vector3 soiCenter = _moverReference.transform.position;
+        Gizmos.color = new Color(1f, 0.3f, 0.1f, 0.1f);
+        Gizmos.DrawSphere(soiCenter, (float)soiRadius);
+    }
+
 #endif
 }

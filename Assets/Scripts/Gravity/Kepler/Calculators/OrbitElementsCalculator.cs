@@ -17,6 +17,7 @@ public class OrbitElementsCalculator : IOrbitElementsCalculator
             CalculateParabolicElements(d);
 
         FinalizeOrbitalElementCalculation(d);
+        OrbitPositionCalculator.ComputeSphereOfInfluence(d);
     }
 
     private void CalculateEllipticElements(OrbitData d)
