@@ -14,11 +14,32 @@ public class CameraController : MonoBehaviour
 
     void Update()
     {
+        HandleTargetSelection();
+
         if (target == null)
             return;
 
         HandleInput();
         UpdateCameraPosition();
+    }
+
+    void HandleTargetSelection()
+    {
+        if (Input.GetMouseButtonDown(0)) // Ліва кнопка натиснута
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit hit))
+            {
+                // Перевіряємо чи є SphereCollider і компонент OrbitMover
+                SphereCollider sphere = hit.collider as SphereCollider;
+                OrbitMover orbitMover = hit.collider.GetComponent<OrbitMover>();
+
+                if (sphere != null && orbitMover != null)
+                {
+                    target = hit.collider.transform;
+                }
+            }
+        }
     }
 
     void HandleInput()

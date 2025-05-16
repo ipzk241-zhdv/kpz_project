@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using TMPro;
 
-public class EpochController : MonoBehaviour
+public class EpochController : MonoBehaviour, ITimeScalable
 {
     [Header("UI Inputs")]
     public TMP_InputField YearField;
@@ -21,6 +21,8 @@ public class EpochController : MonoBehaviour
     public TextMeshProUGUI HourLabel;
     public TextMeshProUGUI MinuteLabel;
     public TextMeshProUGUI SecondLabel;
+
+    public float TimeScale = 1f;
 
     private const double SecondsPerYear = 365 * 24 * 3600;
     private const double SecondsPerDay = 24 * 3600;
@@ -48,8 +50,18 @@ public class EpochController : MonoBehaviour
             return;
         }
 
+        if (TimeWarpManager.Instance != null)
+        {
+            TimeWarpManager.Instance.Register(this);
+        }
+
         Instance = this;
         SetEpoch(_currentEpochSeconds);
+    }
+
+    public void OnTimeScaleChanged(float scale)
+    {
+        TimeScale = scale;
     }
 
     private void OnSliderValueChanged(float sliderValue)
@@ -90,7 +102,7 @@ public class EpochController : MonoBehaviour
 
     private void Update()
     {
-        _currentEpochSeconds += Time.deltaTime;
+        _currentEpochSeconds += Time.deltaTime * TimeScale;
         if (EpochSlider != null)
             EpochSlider.SetValueWithoutNotify((float)_currentEpochSeconds);
         UpdateLabels();

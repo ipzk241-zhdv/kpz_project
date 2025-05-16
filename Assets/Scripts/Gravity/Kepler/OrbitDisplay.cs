@@ -11,6 +11,8 @@ public class OrbitDisplay : MonoBehaviour
     public int OrbitPointsCount = 30;
     public double maxDistance = 500d;
     public LineRenderer lrReference;
+    public float lrMinWidth = 1f;
+    public float lrMaxWidth = 1f;
 
     private OrbitMover _moverReference;
     private Vector3d[] _orbitPoints;
@@ -76,10 +78,35 @@ public class OrbitDisplay : MonoBehaviour
     {
         Vector3d posGravitySource = new Vector3d(_moverReference.AttractorSettings.AttractorObject.transform.position);
         _moverReference.orbitData.GetOrbitPoints(ref _orbitPoints, OrbitPointsCount, posGravitySource, maxDistance);
-        Gizmos.color = OrbitColor;
-        for (int i = 0; i < _orbitPoints.Length - 1; i++)
+
+        if (ShowOrbitGizmo)
         {
-            Gizmos.DrawLine(_orbitPoints[i].ToVector3(), _orbitPoints[i + 1].ToVector3());
+            Gizmos.color = OrbitColor;
+            for (int i = 0; i < _orbitPoints.Length - 1; i++)
+            {
+                Gizmos.DrawLine(_orbitPoints[i].ToVector3(), _orbitPoints[i + 1].ToVector3());
+            }
+        }
+
+        if (lrReference != null)
+        {
+            lrReference.positionCount = _orbitPoints.Length;
+            for (int i = 0; i < _orbitPoints.Length; i++)
+            {
+                lrReference.SetPosition(i, _orbitPoints[i].ToVector3());
+            }
+            lrReference.startColor = OrbitColor;
+            lrReference.endColor = OrbitColor;
+
+            // Adjust width based on camera distance
+            Camera cam = Camera.main;
+            if (cam != null)
+            {
+                float distance = Vector3.Distance(cam.transform.position, transform.position);
+                float width = Mathf.Clamp(0.1f / distance, lrMinWidth, lrMaxWidth); // tweak min/max values as needed
+                lrReference.startWidth = width;
+                lrReference.endWidth = width;
+            }
         }
     }
 
