@@ -83,7 +83,7 @@ Solar System example
 ![Solar Example](./screenshots/solar.png)
 Navigational ball showcase
 ![Navigational ball](./screenshots/navball.png)
-Project size
+Project size  
 ![Project size](./screenshots/projectSize.png)
 
 
