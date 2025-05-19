@@ -21,6 +21,8 @@ public class EpochController : MonoBehaviour, ITimeScalable
     public TextMeshProUGUI HourLabel;
     public TextMeshProUGUI MinuteLabel;
     public TextMeshProUGUI SecondLabel;
+    public TextMeshProUGUI WarpSpeedLabel;
+    public TextMeshProUGUI PlanetInfoLabel;
 
     public float TimeScale = 1f;
 
@@ -37,7 +39,7 @@ public class EpochController : MonoBehaviour, ITimeScalable
     private void Awake()
     {
         _currentEpochSeconds = 0.0;
-        
+
         if (ApplyButton != null)
             ApplyButton.onClick.AddListener(OnApplyClicked);
 
@@ -85,7 +87,7 @@ public class EpochController : MonoBehaviour, ITimeScalable
             return;
         }
 
-        double newEpochSec = year * 365 * 24 * 3600 + day * 24 * 3600 + hour * 3600 + minute * 60 + second;
+        double newEpochSec = (double)year * 365 * 24 * 3600 + (double)day * 24 * 3600 + (double)hour * 3600 + minute * 60 + second;
         double delta = newEpochSec - _currentEpochSeconds;
         if (Math.Abs(delta) < double.Epsilon) return;
         SetEpoch(delta);
@@ -129,6 +131,24 @@ public class EpochController : MonoBehaviour, ITimeScalable
         HourLabel.text = $"Hour: {hours}";
         MinuteLabel.text = $"Min: {minutes}";
         SecondLabel.text = $"Sec: {seconds:F2}";
+        WarpSpeedLabel.text = $"x: {TimeWarpManager.Instance.CurrentTimeScale:F2}";
+        UpdatePlanetInfo();
+
+    }
+
+    public void UpdatePlanetInfo()
+    {
+        var planetTarget = Camera.main.GetComponent<CameraController>().target;
+        var planetMover = planetTarget.GetComponent<OrbitMover>();
+        var planetTargetInfo = planetMover.orbitData;
+
+        PlanetInfoLabel.text = $"Planet: {planetTarget.name}\n" +
+                               $"Apoapsis: {planetTargetInfo.Apoapsis.magnitude:F2}\n" +
+                               $"Periapsis: {planetTargetInfo.Periapsis.magnitude:F2}\n" +
+                               $"Eccentricity: {planetTargetInfo.Eccentricity:F2}\n" +
+                               $"MeanAnomaly: {planetTargetInfo.MeanAnomaly:F2}\n" +
+                               $"Velocity: {planetTargetInfo.velocityRelativeToAttractor.magnitude:F2}\n" +
+                               $"Period: {planetTargetInfo.Period / SecondsPerDay:F2}";
     }
 
     public void Register(IEpochReceiver listener) => epochListeners.Add(listener);

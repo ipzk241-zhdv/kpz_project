@@ -36,7 +36,7 @@ This system aims to simulate the challenges of real-world space programs - balan
 - 🧷 Floating Origin support (precision at scale)
 - 🎥 Custom camera controls (focus, zoom, object tracking)
 - 💾 Save/load game state with orbit persistence
-- 🔧 Tools for procedural solar system creation
+- 🔧 Tools for solar system creation
 - ⏩ Adjustable time warp
 - 🕰 Epoch-based astronomical timing system
 ## 🔜 Planned Features
@@ -77,6 +77,15 @@ This system aims to simulate the challenges of real-world space programs - balan
 2. Open in Unity Hub  
 3. Load any available scene  
 4. Press Play and explore space!  
+
+## 📸 Screenshots
+Solar System example
+![Solar Example](./screenshots/solar.png)
+Navigational ball showcase
+![Navigational ball](./screenshots/navball.png)
+Project size
+![Project size](./screenshots/projectSize.png)
+
 
 ## 💡 Development Philosophy
 
