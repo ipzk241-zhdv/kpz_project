@@ -98,12 +98,11 @@ public class OrbitDisplay : MonoBehaviour
             lrReference.startColor = OrbitColor;
             lrReference.endColor = OrbitColor;
 
-            // Adjust width based on camera distance
             Camera cam = Camera.main;
             if (cam != null)
             {
                 float distance = Vector3.Distance(cam.transform.position, transform.position);
-                float width = Mathf.Clamp(0.1f / distance, lrMinWidth, lrMaxWidth); // tweak min/max values as needed
+                float width = Mathf.Clamp(0.1f / distance, lrMinWidth, lrMaxWidth);
                 lrReference.startWidth = width;
                 lrReference.endWidth = width;
             }

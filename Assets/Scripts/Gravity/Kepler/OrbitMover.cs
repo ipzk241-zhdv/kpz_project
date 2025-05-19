@@ -90,7 +90,7 @@ public class OrbitMover : MonoBehaviour, ITimeScalable, IEpochReceiver
 
     public void UpdateEpoch(double epoch)
     {
-        if (orbitData != null && orbitData.IsValidOrbit)
+        if (orbitData != null && orbitData.IsValidOrbit && enabled)
         {
             orbitData.UpdateOrbitDataByTime(epoch);
             ForceUpdateVelocityHandleFromInternalState();
@@ -150,7 +150,7 @@ public class OrbitMover : MonoBehaviour, ITimeScalable, IEpochReceiver
                     _debugErrorDisplayed = true;
                     if (Application.isPlaying)
                     {
-                        Debug.LogError("OrbitMover: Attractor reference not asigned", context: gameObject);
+                        Debug.Log("OrbitMover: Attractor reference not asigned", context: gameObject);
                     }
                     else
                     {
