@@ -81,31 +81,47 @@ public class OrbitDisplay : MonoBehaviour
 
         if (ShowOrbitGizmo)
         {
-            Gizmos.color = OrbitColor;
-            for (int i = 0; i < _orbitPoints.Length - 1; i++)
-            {
-                Gizmos.DrawLine(_orbitPoints[i].ToVector3(), _orbitPoints[i + 1].ToVector3());
-            }
+            DrawOrbitWithGizmos();
         }
 
         if (lrReference != null)
         {
-            lrReference.positionCount = _orbitPoints.Length;
-            for (int i = 0; i < _orbitPoints.Length; i++)
-            {
-                lrReference.SetPosition(i, _orbitPoints[i].ToVector3());
-            }
-            lrReference.startColor = OrbitColor;
-            lrReference.endColor = OrbitColor;
+            DrawOrbitWithLineRenderer();
+        }
+    }
 
-            Camera cam = Camera.main;
-            if (cam != null)
-            {
-                float distance = Vector3.Distance(cam.transform.position, transform.position);
-                float width = Mathf.Clamp(0.1f / distance, lrMinWidth, lrMaxWidth);
-                lrReference.startWidth = width;
-                lrReference.endWidth = width;
-            }
+    private void DrawOrbitWithGizmos()
+    {
+        Gizmos.color = OrbitColor;
+        for (int i = 0; i < _orbitPoints.Length - 1; i++)
+        {
+            Gizmos.DrawLine(_orbitPoints[i].ToVector3(), _orbitPoints[i + 1].ToVector3());
+        }
+    }
+
+    private void DrawOrbitWithLineRenderer()
+    {
+        lrReference.positionCount = _orbitPoints.Length;
+        for (int i = 0; i < _orbitPoints.Length; i++)
+        {
+            lrReference.SetPosition(i, _orbitPoints[i].ToVector3());
+        }
+
+        lrReference.startColor = OrbitColor;
+        lrReference.endColor = OrbitColor;
+
+        AdjustLineRendererWidth();
+    }
+
+    private void AdjustLineRendererWidth()
+    {
+        Camera cam = Camera.main;
+        if (cam != null)
+        {
+            float distance = Vector3.Distance(cam.transform.position, transform.position);
+            float width = Mathf.Clamp(0.1f / distance, lrMinWidth, lrMaxWidth);
+            lrReference.startWidth = width;
+            lrReference.endWidth = width;
         }
     }
 

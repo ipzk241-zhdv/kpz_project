@@ -3,35 +3,53 @@
 public static class OrbitAnomalyCalculator
 {
     /// <summary>Оновлює аномалії орбіти за проміжок часу.</summary>
+    /// <summary>Оновлює аномалії орбіти за проміжок часу.</summary>
     public static void UpdateOrbitAnomaliesByTime(OrbitData d, double deltaTime)
     {
+        d.MeanAnomaly += d.MeanMotion * deltaTime;
+
         if (d.Eccentricity < 1.0)
         {
-            d.MeanAnomaly += d.MeanMotion * deltaTime;
-            d.MeanAnomaly %= Utils.PI_2;
-            if (d.MeanAnomaly < 0) d.MeanAnomaly += Utils.PI_2;
-            d.EccentricAnomaly = Utils.SolveKeplersEquation(d.MeanAnomaly, d.Eccentricity);
-            var cosE = Math.Cos(d.EccentricAnomaly);
-            d.TrueAnomaly = Math.Acos((cosE - d.Eccentricity) / (1 - d.Eccentricity * cosE));
-            if (d.MeanAnomaly > Math.PI) d.TrueAnomaly = Utils.PI_2 - d.TrueAnomaly;
+            UpdateEllipticAnomalies(d);
         }
         else if (d.Eccentricity > 1.0)
         {
-            d.MeanAnomaly += d.MeanMotion * deltaTime;
-            d.EccentricAnomaly = Utils.SolveKeplersEquation(d.MeanAnomaly, d.Eccentricity);
-            d.TrueAnomaly = Math.Atan2(
-                Math.Sqrt(d.Eccentricity * d.Eccentricity - 1.0) * Math.Sinh(d.EccentricAnomaly),
-                d.Eccentricity - Math.Cosh(d.EccentricAnomaly)
-            );
+            UpdateHyperbolicAnomalies(d);
         }
         else
         {
-            d.MeanAnomaly += d.MeanMotion * deltaTime;
-            d.EccentricAnomaly = Utils.ConvertMeanToEccentricAnomaly(d.MeanAnomaly, d.Eccentricity);
-            d.TrueAnomaly = d.EccentricAnomaly;
+            UpdateParabolicAnomalies(d);
         }
+
         SetPositionByCurrentAnomaly(d);
         SetVelocityByCurrentAnomaly(d);
+    }
+
+    private static void UpdateEllipticAnomalies(OrbitData d)
+    {
+        d.MeanAnomaly %= Utils.PI_2;
+        if (d.MeanAnomaly < 0) d.MeanAnomaly += Utils.PI_2;
+
+        d.EccentricAnomaly = Utils.SolveKeplersEquation(d.MeanAnomaly, d.Eccentricity);
+        var cosE = Math.Cos(d.EccentricAnomaly);
+        d.TrueAnomaly = Math.Acos((cosE - d.Eccentricity) / (1 - d.Eccentricity * cosE));
+        if (d.MeanAnomaly > Math.PI)
+            d.TrueAnomaly = Utils.PI_2 - d.TrueAnomaly;
+    }
+
+    private static void UpdateHyperbolicAnomalies(OrbitData d)
+    {
+        d.EccentricAnomaly = Utils.SolveKeplersEquation(d.MeanAnomaly, d.Eccentricity);
+        d.TrueAnomaly = Math.Atan2(
+            Math.Sqrt(d.Eccentricity * d.Eccentricity - 1.0) * Math.Sinh(d.EccentricAnomaly),
+            d.Eccentricity - Math.Cosh(d.EccentricAnomaly)
+        );
+    }
+
+    private static void UpdateParabolicAnomalies(OrbitData d)
+    {
+        d.EccentricAnomaly = Utils.ConvertMeanToEccentricAnomaly(d.MeanAnomaly, d.Eccentricity);
+        d.TrueAnomaly = d.EccentricAnomaly;
     }
 
     public static void SetMeanAnomaly(OrbitData d, double m)

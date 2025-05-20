@@ -16,24 +16,37 @@ public class KeplerOrbitMoverEditor : Editor
     {
         base.OnInspectorGUI();
 
-        if (!_target.orbitData.IsValidOrbit)
-        {
+        ApplyOrbitEditability();
+
+        DrawMeanAnomalySection();
+
+        DrawOrbitStatistics();
+
+        GUI.enabled = true; // скидаємо стан після всіх відключень
+
+        ValidateAttractorSettings();
+        ValidateOrbitDataConstants();
+    }
+
+    /// <summary>Вмикає/вимикає GUI в залежності від валідності орбіти та її ексцентриситету.</summary>
+    private void ApplyOrbitEditability()
+    {
+        if (!_target.orbitData.IsValidOrbit || _target.orbitData.Eccentricity >= 1.0)
             GUI.enabled = false;
-        }
+    }
 
-        //if (GUILayout.Button("Circularize orbit"))
-        //{
-        //    _target.SetAutoCircleOrbit();
-        //}
-
-        if (_target.orbitData.Eccentricity >= 1.0)
-        {
-            GUI.enabled = false;
-        }
-
+    /// <summary>Малює слайдер Mean Anomaly або просто лейбл, якщо ексцентриситет ≥ 1.</summary>
+    private void DrawMeanAnomalySection()
+    {
         if (_target.orbitData.Eccentricity < 1.0)
         {
-            float meanAnomaly = EditorGUILayout.Slider("Mean anomaly", (float)_target.orbitData.MeanAnomaly, 0, (float)Utils.PI_2);
+            float meanAnomaly = EditorGUILayout.Slider(
+                "Mean anomaly",
+                (float)_target.orbitData.MeanAnomaly,
+                0f,
+                (float)Utils.PI_2
+            );
+
             if (meanAnomaly != (float)_target.orbitData.MeanAnomaly)
             {
                 _target.orbitData.SetMeanAnomaly(meanAnomaly);
@@ -43,51 +56,90 @@ public class KeplerOrbitMoverEditor : Editor
         }
         else
         {
-            EditorGUILayout.LabelField("Mean anomaly", _target.orbitData.MeanAnomaly.ToString());
+            EditorGUILayout.LabelField(
+                "Mean anomaly",
+                _target.orbitData.MeanAnomaly.ToString()
+            );
         }
+    }
 
-        if (_target.orbitData.IsValidOrbit && _target.orbitData.Eccentricity >= 1.0)
-        {
-            GUI.enabled = true;
-        }
+    /// <summary>Малює решту інформації про орбіту (швидкість, період, нахил, тощо).</summary>
+    private void DrawOrbitStatistics()
+    {
+        EditorGUILayout.LabelField(
+            "Velocity",
+            _target.orbitData.velocityRelativeToAttractor.magnitude
+                .ToString("0.00000")
+        );
+        EditorGUILayout.LabelField(
+            "Period (days)",
+            (_target.orbitData.Period / 3600.0 / 24.0).ToString("0.00000")
+        );
 
-        EditorGUILayout.LabelField("Velocity", _target.orbitData.velocityRelativeToAttractor.magnitude.ToString("0.00000"));
-        EditorGUILayout.LabelField("Period", (_target.orbitData.Period / 60 / 60 / 24).ToString("0.00000"));
         if (_target.AttractorSettings.AttractorObject != null)
         {
-            EditorGUILayout.LabelField("Distance surface to surface", (_target.orbitData.AttractorDistance - _target.AttractorSettings.AttractorObject.transform.lossyScale.x / 2 - _target.transform.lossyScale.x / 2).ToString("0.00000"));
+            double surfaceDist = _target.orbitData.AttractorDistance
+                - _target.AttractorSettings.AttractorObject.transform.lossyScale.x / 2
+                - _target.transform.lossyScale.x / 2;
+            EditorGUILayout.LabelField(
+                "Distance surface-to-surface",
+                surfaceDist.ToString("0.00000")
+            );
         }
 
-        string inclinationRad = _target.orbitData.Inclination.ToString();
-        string inclinationDeg = (_target.orbitData.Inclination * Utils.Rad2Deg).ToString("0.000");
-        EditorGUILayout.LabelField("Inclination", string.Format("{0,15} (deg={1})", inclinationRad, inclinationDeg));
+        DrawAngleField(
+            "Inclination",
+            _target.orbitData.Inclination
+        );
+        DrawAngleField(
+            "AscendingNodeLongitude",
+            _target.orbitData.AscendingNodeLongitude
+        );
+        DrawAngleField(
+            "ArgumentOfPerifocus",
+            _target.orbitData.ArgumentOfPerifocus
+        );
 
-        string ascNodeRad = _target.orbitData.AscendingNodeLongitude.ToString();
-        string ascNodeDeg = (_target.orbitData.AscendingNodeLongitude * Utils.Rad2Deg).ToString("0.000");
-        EditorGUILayout.LabelField("AscendingNodeLongitude", string.Format("{0,15} (deg={1})", ascNodeRad, ascNodeDeg));
+        EditorGUILayout.LabelField(
+            "Current Orbit Time",
+            _target.orbitData.GetCurrentOrbitTime().ToString("0.000")
+        );
+        EditorGUILayout.LabelField(
+            "Current MeanMotion",
+            _target.orbitData.MeanMotion.ToString("0.000")
+        );
+    }
 
-        string argOfPeriRad = _target.orbitData.ArgumentOfPerifocus.ToString();
-        string argOfPeriDeg = (_target.orbitData.ArgumentOfPerifocus * Utils.Rad2Deg).ToString("0.000");
-        EditorGUILayout.LabelField("ArgumentOfPerifocus", string.Format("{0,15} (deg={1})", argOfPeriRad, argOfPeriDeg));
+    /// <summary>Допоміжний метод для відображення кута в радіанах і градусах.</summary>
+    private void DrawAngleField(string label, double radians)
+    {
+        string radStr = radians.ToString("0.00000");
+        string degStr = (radians * Utils.Rad2Deg).ToString("0.000");
+        EditorGUILayout.LabelField(
+            label,
+            string.Format("{0,15} (deg={1})", radStr, degStr)
+        );
+    }
 
-        EditorGUILayout.LabelField("Current Orbit Time", _target.orbitData.GetCurrentOrbitTime().ToString("0.000"));
-
-        EditorGUILayout.LabelField("Current MeanMotion", _target.orbitData.MeanMotion.ToString("0.000"));
-
-        GUI.enabled = true;
-
-        if (_target.AttractorSettings != null && _target.AttractorSettings.AttractorObject == _target.gameObject)
+    /// <summary>Скидає AttractorObject, якщо він вказує на себе самого.</summary>
+    private void ValidateAttractorSettings()
+    {
+        if (_target.AttractorSettings != null
+            && _target.AttractorSettings.AttractorObject == _target.gameObject)
         {
             _target.AttractorSettings.AttractorObject = null;
             EditorUtility.SetDirty(_target);
         }
+    }
 
+    /// <summary>Гарантує, що константи гравітації не від’ємні.</summary>
+    private void ValidateOrbitDataConstants()
+    {
         if (_target.AttractorSettings.GravityConstant < 0)
         {
             _target.AttractorSettings.GravityConstant = 0;
             EditorUtility.SetDirty(_target);
         }
-
         if (_target.orbitData.GravConst < 0)
         {
             _target.orbitData.GravConst = 0;
