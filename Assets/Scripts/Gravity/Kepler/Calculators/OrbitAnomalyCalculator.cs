@@ -3,7 +3,6 @@
 public static class OrbitAnomalyCalculator
 {
     /// <summary>Оновлює аномалії орбіти за проміжок часу.</summary>
-    /// <summary>Оновлює аномалії орбіти за проміжок часу.</summary>
     public static void UpdateOrbitAnomaliesByTime(OrbitData d, double deltaTime)
     {
         d.MeanAnomaly += d.MeanMotion * deltaTime;

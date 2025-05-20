@@ -22,7 +22,7 @@ public class KeplerOrbitMoverEditor : Editor
 
         DrawOrbitStatistics();
 
-        GUI.enabled = true; // скидаємо стан після всіх відключень
+        GUI.enabled = true;
 
         ValidateAttractorSettings();
         ValidateOrbitDataConstants();
