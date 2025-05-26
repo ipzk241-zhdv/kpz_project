@@ -118,53 +118,59 @@ public class OrbitMover : MonoBehaviour, ITimeScalable, IEpochReceiver
         {
             if (!LockOrbitEditing)
             {
-                var pos = transform.position - AttractorSettings.AttractorObject.position;
-                Vector3d position = new Vector3d(pos.x, pos.y, pos.z);
-
-                bool velocityHandleChanged = false;
-                if (VelocityHandle != null)
-                {
-                    Vector3 velocity = GetVelocityHandleDisplayedVelocity();
-                    if (velocity != orbitData.velocityRelativeToAttractor.ToVector3())
-                    {
-                        velocityHandleChanged = true;
-                    }
-                }
-
-                if (position != orbitData.positionRelativeToAttractor ||
-                    velocityHandleChanged ||
-                    orbitData.GravConst != AttractorSettings.GravityConstant ||
-                    orbitData.AttractorMass != AttractorSettings.AttractorMass)
-                {
-                    ForceUpdateOrbitData();
-                }
+                TryUpdateOrbitData();
             }
         }
         else
         {
 #if UNITY_EDITOR
-            if (AttractorSettings.AttractorObject == null)
-            {
-                if (!_debugErrorDisplayed)
-                {
-                    _debugErrorDisplayed = true;
-                    if (Application.isPlaying)
-                    {
-                        Debug.Log("OrbitMover: Attractor reference not asigned", context: gameObject);
-                    }
-                    else
-                    {
-                        Debug.Log("OrbitMover: Attractor reference not asigned", context: gameObject);
-                    }
-                }
-            }
-            else
-            {
-                _debugErrorDisplayed = false;
-            }
+            HandleMissingReferencesInEditor();
 #endif
         }
     }
+
+    private void TryUpdateOrbitData()
+    {
+        var pos = transform.position - AttractorSettings.AttractorObject.position;
+        Vector3d position = new Vector3d(pos.x, pos.y, pos.z);
+
+        bool velocityHandleChanged = false;
+        if (VelocityHandle != null)
+        {
+            Vector3 velocity = GetVelocityHandleDisplayedVelocity();
+            if (velocity != orbitData.velocityRelativeToAttractor.ToVector3())
+            {
+                velocityHandleChanged = true;
+            }
+        }
+
+        if (position != orbitData.positionRelativeToAttractor ||
+            velocityHandleChanged ||
+            orbitData.GravConst != AttractorSettings.GravityConstant ||
+            orbitData.AttractorMass != AttractorSettings.AttractorMass)
+        {
+            ForceUpdateOrbitData();
+        }
+    }
+
+
+#if UNITY_EDITOR
+    private void HandleMissingReferencesInEditor()
+    {
+        if (AttractorSettings.AttractorObject == null)
+        {
+            if (!_debugErrorDisplayed)
+            {
+                _debugErrorDisplayed = true;
+                Debug.Log("OrbitMover: Attractor reference not asigned", context: gameObject);
+            }
+        }
+        else
+        {
+            _debugErrorDisplayed = false;
+        }
+    }
+#endif
 
     /// <summary>
     /// Цикл оновлення орбітального руху в реальному часі.
