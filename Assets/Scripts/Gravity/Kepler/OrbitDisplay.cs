@@ -41,20 +41,11 @@ public class OrbitDisplay : MonoBehaviour
         if (_moverReference.AttractorSettings == null || _moverReference.AttractorSettings.AttractorObject == null)
             return;
 
-        if (ShowVelocityGizmo)
-        {
-            ShowVelocity();
-        }
+        if (ShowVelocityGizmo) ShowVelocity();
 
-        if (ShowOrbitGizmo)
-        {
-            ShowOrbit();
-        }
+        if (ShowOrbitGizmo) ShowOrbit();
 
-        if (ShowSOI)
-        {
-            ShowSphereOfInfluence();
-        }
+        if (ShowSOI) ShowSphereOfInfluence();
     }
 
     /// <summary>
@@ -79,6 +70,12 @@ public class OrbitDisplay : MonoBehaviour
         Vector3d posGravitySource = new Vector3d(_moverReference.AttractorSettings.AttractorObject.transform.position);
         _moverReference.orbitData.GetOrbitPoints(ref _orbitPoints, OrbitPointsCount, posGravitySource, maxDistance);
 
+        if (ShowOrbitGizmo) DrawOrbitGizmo();
+        if (lrReference != null) UpdateLineRenderer();
+    }
+
+    private void DrawOrbitGizmo()
+    {
         if (ShowOrbitGizmo)
         {
             Gizmos.color = OrbitColor;
@@ -87,7 +84,10 @@ public class OrbitDisplay : MonoBehaviour
                 Gizmos.DrawLine(_orbitPoints[i].ToVector3(), _orbitPoints[i + 1].ToVector3());
             }
         }
+    }
 
+    private void UpdateLineRenderer()
+    {
         if (lrReference != null)
         {
             lrReference.positionCount = _orbitPoints.Length;
@@ -98,14 +98,19 @@ public class OrbitDisplay : MonoBehaviour
             lrReference.startColor = OrbitColor;
             lrReference.endColor = OrbitColor;
 
-            Camera cam = Camera.main;
-            if (cam != null)
-            {
-                float distance = Vector3.Distance(cam.transform.position, transform.position);
-                float width = Mathf.Clamp(0.1f / distance, lrMinWidth, lrMaxWidth);
-                lrReference.startWidth = width;
-                lrReference.endWidth = width;
-            }
+            AdjustLineRendererWidth();
+        }
+    }
+
+    private void AdjustLineRendererWidth()
+    {
+        Camera cam = Camera.main;
+        if (cam != null)
+        {
+            float distance = Vector3.Distance(cam.transform.position, transform.position);
+            float width = Mathf.Clamp(0.1f / distance, lrMinWidth, lrMaxWidth);
+            lrReference.startWidth = width;
+            lrReference.endWidth = width;
         }
     }
 
