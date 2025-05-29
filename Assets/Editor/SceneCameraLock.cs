@@ -1,53 +1,59 @@
 using UnityEditor;
 using UnityEngine;
 
-// This tool lets you toggle locking the Scene View camera pivot to the selected object.
-// Use the menu item "Tools/Scene Camera Lock -> Toggle Lock" to enable/disable.
+/// <summary>
+/// Locks the Scene View camera pivot to the selected object.
+/// Use the menu item "Tools/Scene Camera Lock -> Toggle Lock" to enable/disable.
+/// </summary>
 [InitializeOnLoad]
 public static class SceneCameraLock
 {
-    private static Transform lockTarget;
-    private static bool isLocked = false;
+    private static Transform _lockTarget;
+    private static bool _isLocked;
 
     static SceneCameraLock()
     {
-        // Subscribe to the SceneView update
         SceneView.duringSceneGui += OnSceneGUI;
     }
 
-    [MenuItem("Tools/Scene Camera Lock/Toggle Lock %`")] // Ctrl/Cmd + Shift + L
+    [MenuItem("Tools/Scene Camera Lock/Toggle Lock %#`")] // Ctrl/Cmd + Shift + `
     private static void ToggleLock()
     {
-        if (Selection.activeTransform != null)
+        if (_isLocked)
         {
-            // Set or clear the lock target
-            if (!isLocked)
-            {
-                lockTarget = Selection.activeTransform;
-                isLocked = true;
-                Debug.Log($"Scene Camera locked to: {lockTarget.name}");
-            }
-            else
-            {
-                isLocked = false;
-                lockTarget = null;
-                Debug.Log("Scene Camera unlocked");
-            }
+            UnlockCamera();
+        }
+        else if (Selection.activeTransform != null)
+        {
+            LockToTarget(Selection.activeTransform);
         }
         else
         {
-            isLocked = false;
-            lockTarget = null;
-            Debug.Log("No object selected. Scene Camera unlocked.");
+            Debug.Log("No object selected. Scene Camera remains unlocked.");
         }
+    }
+
+    private static void LockToTarget(Transform target)
+    {
+        _lockTarget = target;
+        _isLocked = true;
+        Debug.Log($"Scene Camera locked to: {_lockTarget.name}");
+    }
+
+    private static void UnlockCamera()
+    {
+        if (_lockTarget != null)
+            Debug.Log("Scene Camera unlocked");
+
+        _lockTarget = null;
+        _isLocked = false;
     }
 
     private static void OnSceneGUI(SceneView sceneView)
     {
-        if (isLocked && lockTarget != null)
+        if (_isLocked && _lockTarget != null)
         {
-            // Force the pivot of the Scene View to the target object's position
-            sceneView.pivot = lockTarget.position;
+            sceneView.pivot = _lockTarget.position;
             sceneView.Repaint();
         }
     }
