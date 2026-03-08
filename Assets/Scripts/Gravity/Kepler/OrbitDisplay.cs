@@ -42,10 +42,26 @@ public class OrbitDisplay : MonoBehaviour
             return;
 
         if (ShowVelocityGizmo) ShowVelocity();
-
         if (ShowOrbitGizmo) ShowOrbit();
-
         if (ShowSOI) ShowSphereOfInfluence();
+        if (ShowOrbitGizmo)
+        {
+            ShowOrbit();
+        }
+
+        if (ShowSOI)
+        {
+            ShowSphereOfInfluence();
+        }
+        if (ShowOrbitGizmo)
+        {
+            ShowOrbit();
+        }
+
+        if (ShowSOI)
+        {
+            ShowSphereOfInfluence();
+        }
     }
 
     /// <summary>
