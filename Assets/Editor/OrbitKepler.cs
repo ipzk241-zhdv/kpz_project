@@ -48,14 +48,14 @@ public class KeplerOrbitMoverEditor : Editor
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Velocity", _target.orbitData.velocityRelativeToAttractor.magnitude.ToString("0.00000"));
 
-        float periodInDays = _target.orbitData.Period / 60f / 60f / 24f;
+        float periodInDays = (float)_target.orbitData.Period / 60f / 60f / 24f;
         EditorGUILayout.LabelField("Period", periodInDays.ToString("0.00000"));
 
         if (_target.AttractorSettings?.AttractorObject != null)
         {
             float attractorRadius = _target.AttractorSettings.AttractorObject.transform.lossyScale.x / 2;
             float objectRadius = _target.transform.lossyScale.x / 2;
-            float surfaceDistance = _target.orbitData.AttractorDistance - attractorRadius - objectRadius;
+            float surfaceDistance = (float)_target.orbitData.AttractorDistance - attractorRadius - objectRadius;
 
             EditorGUILayout.LabelField("Distance surface to surface", surfaceDistance.ToString("0.00000"));
         }
